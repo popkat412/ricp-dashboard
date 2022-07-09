@@ -1,7 +1,9 @@
 <template>
   <RICPHeader></RICPHeader>
-  <div class="bg-gray-900">
-    <RICPTabs></RICPTabs>
+  <div class="bg-gray-900 min-h-screen">
+    <div class="max-w-7xl m-auto">
+      <RICPTabs></RICPTabs>
+    </div>
   </div>
 </template>
 
