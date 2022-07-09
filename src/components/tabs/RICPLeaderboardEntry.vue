@@ -16,7 +16,7 @@
         />
       </DisclosureButton>
       <DisclosurePanel
-        class="px-4 py-4 text-sm text-blue-100 bg-white/[0.05] rounded-lg mt-1 mb-1"
+        class="px-4 py-4 text-sm text-blue-100 bg-white/[0.05] rounded-lg mt-1 mb-1 max-h-[50vh] overflow-scroll"
       >
         <ol
           v-for="(historyEntry, idx) in sortHistory(

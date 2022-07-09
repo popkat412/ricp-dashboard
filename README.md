@@ -13,6 +13,7 @@
         - integer `change`
         - timestamp `timestamp`
         - string `message`
+        - string `adminName`
 - collection `users` (admin users)
   - document `<uid>` (uid from firebase auth)
     - string `name`
