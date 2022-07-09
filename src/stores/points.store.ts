@@ -43,7 +43,7 @@ export const usePointsStore = defineStore("points", {
         },
         {
           name: "Test 3",
-          points: 500,
+          points: 300,
           history: [
             {
               change: 100,
