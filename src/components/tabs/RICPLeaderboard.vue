@@ -1,7 +1,9 @@
 <template>
   <div>
-    <ol v-for="(entry, idx) in pointsStore.leaderboardEntries" :key="idx">
+    <ol>
       <RICPLeaderboardEntry
+        v-for="(entry, idx) in pointsStore.leaderboardEntries"
+        :key="idx"
         :position="idx + 1"
         :leaderboardEntry="entry"
       ></RICPLeaderboardEntry>

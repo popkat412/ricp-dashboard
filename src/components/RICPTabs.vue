@@ -22,7 +22,7 @@
         </Tab>
       </TabList>
 
-      <TabPanels class="mt-2">
+      <TabPanels class="mt-2 px-4">
         <TabPanel
           v-for="(componentName, idx) in Object.values(tabs)"
           :key="idx"
