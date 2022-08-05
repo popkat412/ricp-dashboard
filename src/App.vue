@@ -5,6 +5,7 @@
       <RICPTabs></RICPTabs>
     </div>
   </div>
+  <vue3-snackbar bottom :duration="3000"></vue3-snackbar>
 </template>
 
 <script setup lang="ts">

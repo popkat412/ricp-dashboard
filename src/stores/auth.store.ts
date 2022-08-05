@@ -1,11 +1,14 @@
 import { defineStore } from "pinia";
 import {
   Auth,
+  AuthError,
   getAuth,
   signInWithEmailAndPassword,
   signOut,
   User,
+  UserCredential,
 } from "firebase/auth";
+import { e, Either } from "../utils";
 
 interface AuthStoreState {
   user: User | null;
@@ -24,14 +27,21 @@ export const useAuthStore = defineStore("auth", {
     },
   },
   actions: {
-    async signIn(email: string, password: string): Promise<void> {
-      // todo: error handling
-      const userCredential = await signInWithEmailAndPassword(
-        this.auth,
-        email,
-        password
+    async signIn(
+      email: string,
+      password: string
+    ): Promise<Either<UserCredential, AuthError>> {
+      const res = await e<UserCredential, AuthError>(
+        signInWithEmailAndPassword(this.auth, email, password)
       );
-      this.user = userCredential.user;
+
+      const [userCredential] = res;
+
+      if (userCredential) {
+        this.user = userCredential.user;
+      }
+
+      return res;
     },
     async signOut(): Promise<void> {
       // todo: error handling

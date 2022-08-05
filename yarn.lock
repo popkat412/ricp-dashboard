@@ -1473,6 +1473,11 @@ setimmediate@^1.0.5:
   resolved "https://registry.yarnpkg.com/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
   integrity sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==
 
+simple-icons@^5.3.0:
+  version "5.24.0"
+  resolved "https://registry.yarnpkg.com/simple-icons/-/simple-icons-5.24.0.tgz#6485a5713c2e5758605b461b833396c4874e9e4d"
+  integrity sha512-wKHeqUBsHYB5KPqdc3e7BGQPQCx/NbHfJuukjo70ABGk6hegjTDSoJhsSEcVadknVG4W3+jcC3G3RbytJnapGQ==
+
 source-map-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
@@ -1544,6 +1549,11 @@ tailwindcss@^3.1.4:
     quick-lru "^5.1.1"
     resolve "^1.22.0"
 
+tiny-emitter@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tiny-emitter/-/tiny-emitter-2.1.0.tgz#1d1a56edfc51c43e863cbb5382a72330e3555423"
+  integrity sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==
+
 tmp@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.2.1.tgz#8457fc3037dcf4719c251367a1af6500ee1ccf14"
@@ -1609,6 +1619,21 @@ vue-tsc@^0.34.7:
   integrity sha512-jzUXky44ZLHC4daaJag7FQr3idlPYN719/K1eObGljz5KaS2UnVGTU/XSYCd7d6ampYYg4OsyalbHyJIxV0aEQ==
   dependencies:
     "@volar/vue-typescript" "0.34.17"
+
+vue3-icon@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vue3-icon/-/vue3-icon-2.0.0.tgz#6a7b16db190da982d120307b36556ebbed7b2d4d"
+  integrity sha512-7uZLM/9ajMlN4Xlr5t7xVPg6leMg1xgOYw7PPxuGohIntlxfPWk27gs8wJ/p63tjIlPsk38HwODpTmEUPqDudw==
+  dependencies:
+    simple-icons "^5.3.0"
+
+vue3-snackbar@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/vue3-snackbar/-/vue3-snackbar-1.1.2.tgz#f207c923f37c501a31aa6aa99067ed92ae176633"
+  integrity sha512-NWFhBPynOYUlXOLhSj+LcTIoKsH83AmOIAB1LvymkJ1P7cO/lLTZMA6F/AVgvbWMyI/OUuGi5KxUW1jtuN6qNQ==
+  dependencies:
+    tiny-emitter "^2.1.0"
+    vue3-icon "^2.0.0"
 
 vue@^3.2.25:
   version "3.2.37"

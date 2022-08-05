@@ -13,7 +13,8 @@
     "dayjs": "^1.11.3",
     "firebase": "^9.8.4",
     "pinia": "^2.0.14",
-    "vue": "^3.2.25"
+    "vue": "^3.2.25",
+    "vue3-snackbar": "^1.1.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",

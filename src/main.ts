@@ -2,8 +2,13 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { initializeApp as initializeFirebaseApp } from "firebase/app";
 
+import "vue3-snackbar/dist/style.css";
+import { SnackbarService, Vue3Snackbar } from "vue3-snackbar";
+
 import App from "./App.vue";
 import "./index.css";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useAuthStore } from "./stores/auth.store";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,5 +26,13 @@ const firebaseApp = initializeFirebaseApp(firebaseConfig);
 const pinia = createPinia();
 const app = createApp(App);
 
+app.use(SnackbarService);
+app.component("vue3-snackbar", Vue3Snackbar);
 app.use(pinia);
 app.mount("#app");
+
+// get the initial user signed in state
+onAuthStateChanged(getAuth(), (user) => {
+  const authStore = useAuthStore();
+  authStore.user = user;
+});
