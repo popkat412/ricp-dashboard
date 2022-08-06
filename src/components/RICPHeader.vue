@@ -4,7 +4,7 @@
       class="flex items-center justify-between border-b border-gray-800 px-4 py-5 bg-opacity-50 backdrop-blur backdrop-filter text-slate-50"
     >
       <div>RICP Point System</div>
-      <Popover v-if="!authStore.isSignedIn" class="relative">
+      <Popover v-if="!isAuthenticated" class="relative">
         <PopoverButton as="template" v-slot="{ open }"
           ><button
             :class="[
@@ -65,11 +65,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
+import { useAuth } from "@vueuse/firebase";
+import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 import { useSnackbar } from "vue3-snackbar";
 
-import { useAuthStore } from "../stores/auth.store";
+import { e } from "../utils";
 
-const authStore = useAuthStore();
+const auth = getAuth();
+
+const { isAuthenticated } = useAuth(auth);
 const snackbar = useSnackbar();
 
 const email = ref("");
@@ -93,7 +97,9 @@ const adminLogin = async () => {
   if (invalidEmail.value || invalidPassword.value) return;
 
   // try sign in
-  const [, err] = await authStore.signIn(email.value, password.value);
+  const [, err] = await e(
+    signInWithEmailAndPassword(auth, email.value, password.value)
+  );
 
   // helper functions
   const errFn = (text: string) =>
@@ -132,6 +138,5 @@ const adminLogin = async () => {
 
 const signOut = () => {
   // todo
-  authStore.signOut();
 };
 </script>
