@@ -11,7 +11,7 @@
               open ? 'text-slate-50' : 'text-slate-50/50',
               'hover:text-slate-50',
             ]"
-            @click="resetValidation"
+            @click="resetEverything"
           >
             Admin login
           </button></PopoverButton
@@ -35,6 +35,7 @@
                 'focus-ring p-2 rounded-sm bg-gray-800 border-2',
                 invalidPassword ? 'border-rose-500' : 'border-slate-700',
               ]"
+              @keyup.enter="adminLogin"
             />
             <button
               class="focus-ring p-2 bg-gradient-to-br from-blue-800 to-blue-900 text-white/80 hover:text-white"
@@ -67,15 +68,26 @@ const authStore = useAuthStore();
 
 const snackbar = useSnackbar();
 
+// models
 const email = ref("");
 const password = ref("");
 
+// validation
 const invalidEmail = ref(false),
   invalidPassword = ref(false);
 
+// reset stuff
 const resetValidation = () => {
   invalidEmail.value = false;
   invalidPassword.value = false;
+};
+const resetInputs = () => {
+  email.value = "";
+  password.value = "";
+};
+const resetEverything = () => {
+  resetValidation();
+  resetInputs();
 };
 
 const adminLogin = async () => {
@@ -86,6 +98,8 @@ const adminLogin = async () => {
   if (email.value == "") invalidEmail.value = true;
   if (password.value == "") invalidPassword.value = true;
   if (invalidEmail.value || invalidPassword.value) return;
+
+  // todo: loading indicator
 
   // try sign in
   const [, err] = await authStore.signIn(email.value, password.value);
@@ -105,6 +119,7 @@ const adminLogin = async () => {
   // success handling
   if (!err) {
     snackbar.add({ type: "success", title: `Logged in as ${email.value}` });
+    resetEverything();
     return;
   }
 
