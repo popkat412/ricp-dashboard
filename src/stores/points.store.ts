@@ -115,15 +115,16 @@ export const usePointsStore = defineStore("points", {
     },
   },
   actions: {
+    // a string return will be an error, null return means no error
     async addPoints(
       memberId: string,
       deltaAmount: number,
       message: string
-    ): Promise<Either<undefined, string>> {
+    ): Promise<string | null> {
       const currentUser = getAuth().currentUser;
 
       if (!currentUser) {
-        return [null, "cannot modify points, not signed in as admin"];
+        return "cannot modify points, not signed in as admin";
       }
 
       // for now just modify the hardcoded stuff
@@ -137,10 +138,10 @@ export const usePointsStore = defineStore("points", {
             timestamp: new Date(),
             adminName: "test admin", // todo: make this actually use the current user
           });
-          return [undefined, null];
+          return null;
         }
       }
-      return [null, `member with id ${memberId} not found`];
+      return `member with id ${memberId} not found`;
     },
   },
 });

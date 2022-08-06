@@ -65,7 +65,17 @@ const addPoints = async () => {
     return;
   }
 
-  await pointsStore.addPoints($props.memberId, parsedAmount, message.value);
+  // todo: loading indicator
+
+  const err = await pointsStore.addPoints(
+    $props.memberId,
+    parsedAmount,
+    message.value
+  );
+  if (err) {
+    snackbar.add({ type: "error", title: "Error", text: err });
+    return;
+  }
 
   $emit("close");
 };

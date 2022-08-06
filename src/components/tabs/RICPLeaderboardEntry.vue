@@ -10,7 +10,7 @@
         </span>
         <div class="flex-grow"></div>
         <button
-          v-if="isHovered || isFocused || open"
+          v-if="authStore.isAuthenticated && (isHovered || isFocused || open)"
           class="focus-ring mx-2 bg-sky-700 text-white p-1 rounded-sm"
           @click.stop="addPoints"
           @keyup.enter="addPoints"
@@ -52,8 +52,11 @@ import RICPHistoryEntries from "./RICPHistoryEntries.vue";
 import AddPointsModal from "../AddPointsModal.vue";
 import type { IMember } from "../../types/IMember";
 import type { IHistoryEntry } from "../../types/IHistoryEntry";
+import { useAuthStore } from "../../stores/auth.store";
 
 defineProps<{ position: number; leaderboardEntry: IMember }>();
+
+const authStore = useAuthStore();
 
 const addPointsModalOpen = ref(false);
 const hoverTrigger = ref() as Ref<HTMLElement>;

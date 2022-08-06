@@ -4,7 +4,7 @@
       class="flex items-center justify-between border-b border-gray-800 px-4 py-5 bg-opacity-50 backdrop-blur backdrop-filter text-slate-50"
     >
       <div>RICP Point System</div>
-      <Popover v-if="!isAuthenticated" class="relative">
+      <Popover v-if="!authStore.isAuthenticated" class="relative">
         <PopoverButton as="template" v-slot="{ open }"
           ><button
             :class="[
@@ -23,10 +23,7 @@
               placeholder="Email"
               v-model="email"
               :class="[
-                'p-2',
-                'rounded-sm',
-                'bg-gray-800',
-                'border-2',
+                'focus-ring p-2 rounded-sm bg-gray-800 border-2',
                 invalidEmail ? 'border-rose-500' : 'border-slate-700',
               ]"
             />
@@ -35,15 +32,12 @@
               placeholder="Password"
               v-model="password"
               :class="[
-                'p-2',
-                'rounded-sm',
-                'bg-gray-800',
-                'border-2',
+                'focus-ring p-2 rounded-sm bg-gray-800 border-2',
                 invalidPassword ? 'border-rose-500' : 'border-slate-700',
               ]"
             />
             <button
-              class="p-2 bg-gradient-to-br from-blue-800 to-blue-900 text-white/80 hover:text-white"
+              class="focus-ring p-2 bg-gradient-to-br from-blue-800 to-blue-900 text-white/80 hover:text-white"
               @click="adminLogin"
             >
               Login
@@ -65,15 +59,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
-import { useAuth } from "@vueuse/firebase";
-import { getAuth, signInWithEmailAndPassword } from "@firebase/auth";
 import { useSnackbar } from "vue3-snackbar";
 
-import { e } from "../utils";
+import { useAuthStore } from "../stores/auth.store";
 
-const auth = getAuth();
+const authStore = useAuthStore();
 
-const { isAuthenticated } = useAuth(auth);
 const snackbar = useSnackbar();
 
 const email = ref("");
@@ -97,9 +88,7 @@ const adminLogin = async () => {
   if (invalidEmail.value || invalidPassword.value) return;
 
   // try sign in
-  const [, err] = await e(
-    signInWithEmailAndPassword(auth, email.value, password.value)
-  );
+  const [, err] = await authStore.signIn(email.value, password.value);
 
   // helper functions
   const errFn = (text: string) =>
@@ -136,7 +125,16 @@ const adminLogin = async () => {
   }
 };
 
-const signOut = () => {
-  // todo
+const signOut = async () => {
+  const err = await authStore.signOut();
+  if (err) {
+    snackbar.add({
+      type: "error",
+      title: "Error signing out",
+      text: err.message, // yes yes i'm technically not supposed to show this to the user but whatever
+    });
+  } else {
+    snackbar.add({ type: "success", title: "SIgned out successfully" });
+  }
 };
 </script>
