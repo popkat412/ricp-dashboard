@@ -1,14 +1,22 @@
 <template>
-  <div class="w-full pt-2">
+  <div ref="hoverTrigger" class="w-full pt-2">
     <Disclosure v-slot="{ open }">
       <DisclosureButton
-        class="flex w-full h-12 items-center rounded-lg bg-blue-100/10 px-4 py-2 text-left text-sm text-blue-100 hover:bg-blue-200/10 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75"
+        class="focus-ring flex w-full h-12 items-center rounded-lg bg-blue-100/10 px-4 py-2 text-left text-sm text-blue-100 hover:bg-blue-200/10"
       >
         <span
           ><strong>#{{ $props.position }}</strong>
           {{ $props.leaderboardEntry.name }}
         </span>
         <div class="flex-grow"></div>
+        <button
+          v-if="isHovered || isFocused || open"
+          class="focus-ring mx-2 bg-sky-700 text-white p-1 rounded-sm"
+          @click.stop="addPoints"
+          @keyup.enter="addPoints"
+        >
+          Add Points
+        </button>
         <span>{{ $props.leaderboardEntry.points }} points</span>
         <ChevronUpIcon
           :class="open ? 'rotate-180 transform' : ''"
@@ -24,21 +32,42 @@
       </DisclosurePanel>
     </Disclosure>
   </div>
+  <AddPointsModal
+    :member-id="$props.leaderboardEntry.id"
+    :member-name="$props.leaderboardEntry.name"
+    :open="addPointsModalOpen"
+    @close="addPointsModalOpen = false"
+  >
+  </AddPointsModal>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
+import type { Ref } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronUpIcon } from "@heroicons/vue/solid";
+import { useElementHover, useFocus } from "@vueuse/core";
 
 import RICPHistoryEntries from "./RICPHistoryEntries.vue";
+import AddPointsModal from "../AddPointsModal.vue";
 import type { IMember } from "../../types/IMember";
 import type { IHistoryEntry } from "../../types/IHistoryEntry";
 
 defineProps<{ position: number; leaderboardEntry: IMember }>();
 
+const addPointsModalOpen = ref(false);
+const hoverTrigger = ref() as Ref<HTMLElement>;
+
+const isHovered = useElementHover(hoverTrigger);
+const { focused: isFocused } = useFocus(hoverTrigger);
+
 const sortHistory = (history: IHistoryEntry[]) => {
   return [...history].sort(
     (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
   );
+};
+
+const addPoints = () => {
+  addPointsModalOpen.value = true;
 };
 </script>

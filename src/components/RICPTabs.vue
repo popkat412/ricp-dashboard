@@ -10,8 +10,7 @@
         >
           <button
             :class="[
-              'w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-50',
-              'ring-offset-2 ring-offset-blue-900 focus:outline-none focus:ring-2',
+              'focus-ring w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-blue-50',
               selected
                 ? 'bg-gray-400/30 shadow'
                 : 'text-blue-100 hover:bg-white/[0.05] hover:text-white',
@@ -26,7 +25,7 @@
         <TabPanel
           v-for="(componentName, idx) in Object.values(tabs)"
           :key="idx"
-          class="text-slate-100"
+          class="focus-ring text-slate-100"
         >
           <component :is="componentName"></component>
         </TabPanel>

@@ -1,7 +1,9 @@
+import { getAuth } from "firebase/auth";
 import { defineStore } from "pinia";
 import { IHistoryEntry } from "../types/IHistoryEntry";
 
 import type { IMember } from "../types/IMember";
+import { Either } from "../utils";
 
 interface PointsStoreState {
   members: IMember[];
@@ -110,6 +112,35 @@ export const usePointsStore = defineStore("points", {
       }
       allHistory.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
       return allHistory;
+    },
+  },
+  actions: {
+    async addPoints(
+      memberId: string,
+      deltaAmount: number,
+      message: string
+    ): Promise<Either<undefined, string>> {
+      const currentUser = getAuth().currentUser;
+
+      if (!currentUser) {
+        return [null, "cannot modify points, not signed in as admin"];
+      }
+
+      // for now just modify the hardcoded stuff
+      for (const member of this.members) {
+        if (member.id == memberId) {
+          member.points += deltaAmount;
+          member.history.push({
+            id: "ugh",
+            change: deltaAmount,
+            message,
+            timestamp: new Date(),
+            adminName: "test admin", // todo: make this actually use the current user
+          });
+          return [undefined, null];
+        }
+      }
+      return [null, `member with id ${memberId} not found`];
     },
   },
 });

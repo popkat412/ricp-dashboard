@@ -53,7 +53,7 @@
       </Popover>
       <button
         v-else
-        class="text-slate-50/50 hover:text-slate-50"
+        class="focus-ring text-slate-50/50 hover:text-slate-50"
         @click="signOut"
       >
         Sign Out
