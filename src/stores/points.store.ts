@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { IHistoryEntry } from "../types/IHistoryEntry";
 
 import type { IMember } from "../types/IMember";
-import { Either } from "../utils";
+import { useAuthStore } from "./auth.store";
 
 interface PointsStoreState {
   members: IMember[];
@@ -121,9 +121,9 @@ export const usePointsStore = defineStore("points", {
       deltaAmount: number,
       message: string
     ): Promise<string | null> {
-      const currentUser = getAuth().currentUser;
+      const authStore = useAuthStore();
 
-      if (!currentUser) {
+      if (!(authStore.isAuthenticated && authStore.currentUserName)) {
         return "cannot modify points, not signed in as admin";
       }
 
@@ -136,7 +136,7 @@ export const usePointsStore = defineStore("points", {
             change: deltaAmount,
             message,
             timestamp: new Date(),
-            adminName: "test admin", // todo: make this actually use the current user
+            adminName: authStore.currentUserName,
           });
           return null;
         }

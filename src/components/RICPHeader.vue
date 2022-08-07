@@ -4,6 +4,8 @@
       class="flex items-center justify-between border-b border-gray-800 px-4 py-5 bg-opacity-50 backdrop-blur backdrop-filter text-slate-50"
     >
       <div>RICP Point System</div>
+
+      <!-- signin/sign out button -->
       <Popover v-if="!authStore.isAuthenticated" class="relative">
         <PopoverButton as="template" v-slot="{ open }"
           ><button

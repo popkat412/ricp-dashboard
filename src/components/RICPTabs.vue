@@ -25,7 +25,7 @@
         <TabPanel
           v-for="(componentName, idx) in Object.values(tabs)"
           :key="idx"
-          class="focus-ring text-slate-100"
+          class="focus-ring text-slate-100 rounded-md"
         >
           <component :is="componentName"></component>
         </TabPanel>
