@@ -1,147 +1,111 @@
-import { getAuth } from "firebase/auth";
+import {
+  collection,
+  doc,
+  DocumentReference,
+  getFirestore,
+  increment,
+  onSnapshot,
+  serverTimestamp,
+  writeBatch,
+} from "firebase/firestore";
 import { defineStore } from "pinia";
-import { IHistoryEntry } from "../types/IHistoryEntry";
-
-import type { IMember } from "../types/IMember";
+import { computed, readonly, ref } from "vue";
 import { useAuthStore } from "./auth.store";
+import { FirebaseMember, Member } from "../types/Member";
 
-interface PointsStoreState {
-  members: IMember[];
-}
+export const usePointsStore = defineStore("points", () => {
+  const db = getFirestore();
 
-export const usePointsStore = defineStore("points", {
-  state: () => {
-    // fill with dummy data for now
-    const state: PointsStoreState = {
-      members: [
-        {
-          name: "Test 1",
-          id: "cccccc",
-          points: 100,
-          history: [
-            {
-              id: "asdfasdf",
-              change: 100,
-              timestamp: new Date(10),
-              message: "Completed question",
-              adminName: "Yunze",
-            },
-          ],
-        },
-        {
-          name: "Test 2",
-          id: "abababababa",
-          points: -10,
-          history: [
-            {
-              id: "sdfasdfasd",
-              change: 90,
-              timestamp: new Date(100),
-              message: "Did something good",
-              adminName: "AJR",
-            },
-            {
-              id: "adfsdyuf",
-              change: -100,
-              timestamp: new Date(101),
-              message: "Did something bad",
-              adminName: "Yunze",
-            },
-          ],
-        },
-        {
-          name: "Test 3",
-          id: "asdssssss",
-          points: 300,
-          history: [
-            {
-              id: "ouisdofsd",
-              change: 100,
-              timestamp: new Date(11),
-              message: "Completed another question",
-              adminName: "Yunze",
-            },
+  const authStore = useAuthStore();
 
-            {
-              id: "xasdfasdfx",
-              change: 100,
-              timestamp: new Date(12),
-              message: "Completed yet another question",
-              adminName: "Yunze",
-            },
-
-            {
-              id: "yasdysy",
-              change: 100,
-              timestamp: new Date(10),
-              message: "Completed question",
-              adminName: "AJR",
-            },
-          ],
-        },
-        {
-          name: "Test 4",
-          id: "asdfa",
-          points: 50,
-          history: [
-            {
-              id: "asdfsfysfyysdf",
-              change: 50,
-              timestamp: new Date(100),
-              message: "Completed half a question..?",
-              adminName: "AJR",
-            },
-          ],
-        },
-      ],
+  // members
+  const members = ref<Member[]>([]);
+  onSnapshot(collection(db, "members"), async (snapshot) => {
+    const removeMemberById = (id: string) => {
+      const idx = members.value.findIndex((v) => v.id == id);
+      if (idx == -1) {
+        console.error(`could not find member ${id} in local store`);
+        return;
+      }
+      members.value.splice(idx, 1);
     };
-    return state;
-  },
-  getters: {
-    // members sorted by points
-    leaderboardEntries(): IMember[] {
-      return [...this.members].sort((a, b) => b.points - a.points);
-    },
-    // all history from all members
-    allHistory(): IHistoryEntry<"with member">[] {
-      const allHistory: IHistoryEntry<"with member">[] = [];
-      for (const member of this.members) {
-        for (const historyEntry of member.history) {
-          allHistory.push({ ...historyEntry, memberName: member.name });
-        }
+    const addMemberFromDocRef = async (docRef: DocumentReference) => {
+      const [member, err] = await Member.fromDoc(
+        docRef as DocumentReference<FirebaseMember>
+      );
+      if (member) {
+        members.value.push(member);
+      } else {
+        throw new Error(`error getting member from doc: ${err}`);
       }
-      allHistory.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-      return allHistory;
-    },
-  },
-  actions: {
-    // a string return will be an error, null return means no error
-    async addPoints(
-      memberId: string,
-      deltaAmount: number,
-      message: string
-    ): Promise<string | null> {
-      const authStore = useAuthStore();
+    };
+    for (const change of snapshot.docChanges()) {
+      switch (change.type) {
+        case "modified":
+          removeMemberById(change.doc.id);
+          addMemberFromDocRef(change.doc.ref);
+          break;
+        case "added":
+          addMemberFromDocRef(change.doc.ref);
+          break;
+        case "removed":
+          removeMemberById(change.doc.id);
+          break;
+        default:
+          throw new Error(`unknown Firestore change.type: ${change.type}`);
+      }
+    }
+  });
 
-      if (!(authStore.isAuthenticated && authStore.currentUserName)) {
-        return "cannot modify points, not signed in as admin";
-      }
+  // leaderboard entries, which is basically members sorted by points
+  const leaderboardEntries = computed(() =>
+    [...members.value].sort((a, b) => b.points - a.points)
+  );
 
-      // for now just modify the hardcoded stuff
-      for (const member of this.members) {
-        if (member.id == memberId) {
-          member.points += deltaAmount;
-          member.history.push({
-            id: "ugh",
-            change: deltaAmount,
-            message,
-            timestamp: new Date(),
-            adminName: authStore.currentUserName,
-          });
-          return null;
-        }
-      }
-      return `member with id ${memberId} not found`;
-    },
-  },
+  // all history, aka collated histories from all the members
+  const allHistory = computed(() => {
+    // i love functional programming
+    return members.value
+      .flatMap((v) => v.history)
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  });
+
+  // a string return will be an error, null return means no error
+  const addPoints = async (
+    memberId: string,
+    deltaAmount: number,
+    message: string
+  ): Promise<string | null> => {
+    const batch = writeBatch(db);
+
+    const docRef = doc(db, "members", memberId);
+    const newHistoryEntry = doc(collection(db, docRef.path, "history"));
+
+    if (!(authStore.isAuthenticated && authStore.user?.uid)) {
+      throw "cannot modify points, not signed in as admin";
+    }
+
+    batch
+      .update(docRef, {
+        points: increment(deltaAmount),
+      })
+      .set(newHistoryEntry, {
+        adminId: authStore.user.uid,
+        change: deltaAmount,
+        message,
+        timestamp: serverTimestamp(),
+      });
+
+    await batch.commit();
+
+    return null;
+  };
+
+  return {
+    members: readonly(members),
+    leaderboardEntries,
+    allHistory,
+
+    addPoints,
+  };
 });

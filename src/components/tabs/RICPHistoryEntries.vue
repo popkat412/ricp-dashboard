@@ -29,7 +29,7 @@
           </td>
 
           <td v-if="'memberName' in entry">
-            <em>{{ entry.memberName }}</em>
+            <em>{{ entry.member.name }}</em>
           </td>
 
           <td>
@@ -37,7 +37,7 @@
           </td>
 
           <td>
-            <em>{{ entry.adminName }}</em>
+            <em>{{ entry.admin.name }}</em>
           </td>
         </tr>
       </tbody>
@@ -47,10 +47,10 @@
 
 <script setup lang="ts">
 import dayjs from "dayjs";
-import type { IHistoryEntry } from "../../types/IHistoryEntry";
+import type { HistoryEntry } from "../../types/HistoryEntry";
 
 defineProps<{
-  entries: IHistoryEntry<"with member">[] | IHistoryEntry<"without member">[];
+  entries: HistoryEntry[];
 }>();
 
 const formatTimestamp = (timestamp: Date) => {

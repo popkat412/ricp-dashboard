@@ -50,11 +50,12 @@ import { useElementHover, useFocus } from "@vueuse/core";
 
 import RICPHistoryEntries from "./RICPHistoryEntries.vue";
 import AddPointsModal from "../AddPointsModal.vue";
-import type { IMember } from "../../types/IMember";
-import type { IHistoryEntry } from "../../types/IHistoryEntry";
 import { useAuthStore } from "../../stores/auth.store";
 
-defineProps<{ position: number; leaderboardEntry: IMember }>();
+import type { Member } from "../../types/Member";
+import type { HistoryEntry } from "../../types/HistoryEntry";
+
+defineProps<{ position: number; leaderboardEntry: Member }>();
 
 const authStore = useAuthStore();
 
@@ -64,7 +65,7 @@ const hoverTrigger = ref() as Ref<HTMLElement>;
 const isHovered = useElementHover(hoverTrigger);
 const { focused: isFocused } = useFocus(hoverTrigger);
 
-const sortHistory = (history: IHistoryEntry[]) => {
+const sortHistory = (history: HistoryEntry[]) => {
   return [...history].sort(
     (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
   );
