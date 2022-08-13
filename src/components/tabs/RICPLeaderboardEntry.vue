@@ -27,8 +27,11 @@
         class="px-4 py-4 text-sm text-blue-100 bg-white/[0.05] rounded-lg mt-1 mb-1 max-h-[50vh] overflow-scroll"
       >
         <RICPHistoryEntries
-          :entries="sortHistory($props.leaderboardEntry.history)"
+          v-if="sortedHistory.length > 0"
+          :entries="sortedHistory"
         ></RICPHistoryEntries>
+
+        <div v-else>No history</div>
       </DisclosurePanel>
     </Disclosure>
   </div>
@@ -42,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { Ref } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronUpIcon } from "@heroicons/vue/solid";
@@ -53,9 +56,8 @@ import AddPointsModal from "../AddPointsModal.vue";
 import { useAuthStore } from "../../stores/auth.store";
 
 import type { Member } from "../../types/Member";
-import type { HistoryEntry } from "../../types/HistoryEntry";
 
-defineProps<{ position: number; leaderboardEntry: Member }>();
+const $props = defineProps<{ position: number; leaderboardEntry: Member }>();
 
 const authStore = useAuthStore();
 
@@ -65,11 +67,11 @@ const hoverTrigger = ref() as Ref<HTMLElement>;
 const isHovered = useElementHover(hoverTrigger);
 const { focused: isFocused } = useFocus(hoverTrigger);
 
-const sortHistory = (history: HistoryEntry[]) => {
-  return [...history].sort(
+const sortedHistory = computed(() =>
+  [...$props.leaderboardEntry.history].sort(
     (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
-  );
-};
+  )
+);
 
 const addPoints = () => {
   addPointsModalOpen.value = true;

@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   doc,
   DocumentReference,
@@ -70,6 +71,7 @@ export const usePointsStore = defineStore("points", () => {
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   });
 
+  // todo: refactor to use more consistent error handling throughout
   // a string return will be an error, null return means no error
   const addPoints = async (
     memberId: string,
@@ -101,11 +103,19 @@ export const usePointsStore = defineStore("points", () => {
     return null;
   };
 
+  const addMember = async (name: string) => {
+    await addDoc(collection(db, "members"), {
+      name,
+      points: 0,
+    });
+  };
+
   return {
     members: readonly(members),
     leaderboardEntries,
     allHistory,
 
     addPoints,
+    addMember,
   };
 });
