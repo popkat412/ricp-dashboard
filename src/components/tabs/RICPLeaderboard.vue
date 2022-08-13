@@ -16,11 +16,11 @@
       <BaseLoadingIndicator />
     </div>
   </div>
-  <!-- todo: don't show when not signed in -->
   <div class="w-full flex justify-center items-center">
     <button
       class="focus-ring p-1 rounded-sm bg-sky-800 mt-2"
       @click="addMemberModalOpen = true"
+      v-if="authStore.isAuthenticated"
     >
       Add member
     </button>
@@ -40,8 +40,10 @@ import AddMemberModal from "../AddMemberModal.vue";
 import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
 
 import { usePointsStore } from "../../stores/points.store";
+import { useAuthStore } from "../../stores/auth.store";
 
 const pointsStore = usePointsStore();
+const authStore = useAuthStore();
 
 const addMemberModalOpen = ref(false);
 </script>
