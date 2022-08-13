@@ -13,7 +13,7 @@
       <input
         type="text"
         placeholder="Amount (negative value subtracts points)"
-        class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2"
+        class="focus-ring p-2 rounded-sm bg-gray-900"
         v-model="amount"
       />
       <input
@@ -21,6 +21,10 @@
         placeholder="Message"
         class="focus-ring p-2 rounded-sm bg-gray-900"
         v-model="message"
+      />
+
+      <BaseLoadingIndicator
+        :style="{ visibility: loading ? 'visible' : 'hidden' }"
       />
 
       <div class="flex justify-end flex-row space-x-1">
@@ -39,6 +43,8 @@
 import { ref } from "vue";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
 import { useSnackbar } from "vue3-snackbar";
+
+import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
 import { usePointsStore } from "../stores/points.store";
 
 const $props = defineProps<{
@@ -54,6 +60,7 @@ const pointsStore = usePointsStore();
 
 const amount = ref("");
 const message = ref("");
+const loading = ref(false);
 
 const snackbar = useSnackbar();
 
@@ -65,7 +72,7 @@ const addPoints = async () => {
     return;
   }
 
-  // todo: loading indicator
+  loading.value = true;
 
   const err = await pointsStore.addPoints(
     $props.memberId,
@@ -77,6 +84,7 @@ const addPoints = async () => {
     return;
   }
 
+  loading.value = false;
   $emit("close");
 };
 </script>

@@ -16,6 +16,10 @@
         v-model="name"
       />
 
+      <BaseLoadingIndicator
+        :style="{ visibility: loading ? 'visible' : 'hidden' }"
+      />
+
       <div class="flex justify-end flex-row space-x-1">
         <button class="focus-ring p-1 rounded-sm" @click="$emit('close')">
           Cancel
@@ -45,6 +49,7 @@ const pointsStore = usePointsStore();
 const snackbar = useSnackbar();
 
 const name = ref("");
+const loading = ref(false);
 
 const addMember = async () => {
   if (name.value == "") {
@@ -52,7 +57,7 @@ const addMember = async () => {
     return;
   }
 
-  // todo: loading indicator
+  loading.value = true;
 
   const err = await pointsStore.addMember(name.value);
   if (err) {
@@ -60,6 +65,7 @@ const addMember = async () => {
     return;
   }
 
+  loading.value = false;
   snackbar.add({
     type: "success",
     title: `Successfully added member ${name.value}`,

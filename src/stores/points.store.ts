@@ -19,6 +19,8 @@ export const usePointsStore = defineStore("points", () => {
 
   const authStore = useAuthStore();
 
+  const finishedInitialLoad = ref(false);
+
   // members
   const members = ref<Member[]>([]);
   onSnapshot(collection(db, "members"), async (snapshot) => {
@@ -44,10 +46,10 @@ export const usePointsStore = defineStore("points", () => {
       switch (change.type) {
         case "modified":
           removeMemberById(change.doc.id);
-          addMemberFromDocRef(change.doc.ref);
+          await addMemberFromDocRef(change.doc.ref);
           break;
         case "added":
-          addMemberFromDocRef(change.doc.ref);
+          await addMemberFromDocRef(change.doc.ref);
           break;
         case "removed":
           removeMemberById(change.doc.id);
@@ -56,6 +58,7 @@ export const usePointsStore = defineStore("points", () => {
           throw new Error(`unknown Firestore change.type: ${change.type}`);
       }
     }
+    finishedInitialLoad.value = true;
   });
 
   // leaderboard entries, which is basically members sorted by points
@@ -103,14 +106,21 @@ export const usePointsStore = defineStore("points", () => {
     return null;
   };
 
+  // returns a string containing the error if there was one, otherwise null
   const addMember = async (name: string) => {
-    await addDoc(collection(db, "members"), {
-      name,
-      points: 0,
-    });
+    try {
+      await addDoc(collection(db, "members"), {
+        name,
+        points: 0,
+      });
+    } catch (e) {
+      return `${e}`;
+    }
+    return null;
   };
 
   return {
+    finishedInitialLoad: readonly(finishedInitialLoad),
     members: readonly(members),
     leaderboardEntries,
     allHistory,

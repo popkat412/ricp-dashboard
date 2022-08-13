@@ -39,8 +39,13 @@
               ]"
               @keyup.enter="adminLogin"
             />
+
+            <BaseLoadingIndicator
+              :style="{ visibility: loading ? 'visible' : 'hidden' }"
+            />
+
             <button
-              class="focus-ring p-2 bg-gradient-to-br from-blue-800 to-blue-900 text-white/80 hover:text-white"
+              class="focus-ring p-2 bg-gradient-to-br from-blue-800 to-blue-900 text-white"
               @click="adminLogin"
             >
               Login
@@ -74,6 +79,8 @@ const snackbar = useSnackbar();
 const email = ref("");
 const password = ref("");
 
+const loading = ref(false);
+
 // validation
 const invalidEmail = ref(false),
   invalidPassword = ref(false);
@@ -101,7 +108,7 @@ const adminLogin = async () => {
   if (password.value == "") invalidPassword.value = true;
   if (invalidEmail.value || invalidPassword.value) return;
 
-  // todo: loading indicator
+  loading.value = true;
 
   // try sign in
   const [, err] = await authStore.signIn(email.value, password.value);
@@ -117,6 +124,8 @@ const adminLogin = async () => {
     invalidEmail.value = false;
     invalidPassword.value = true;
   };
+
+  loading.value = false;
 
   // success handling
   if (!err) {
