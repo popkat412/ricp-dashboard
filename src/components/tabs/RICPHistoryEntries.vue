@@ -5,9 +5,7 @@
         <tr>
           <th class="py-3 px-2">Time</th>
           <th class="py-3 pr-2">Change</th>
-          <th class="py-3 pr-2" v-if="'memberName' in $props.entries[0]">
-            Name
-          </th>
+          <th class="py-3 pr-2" v-if="showMemberName">Name</th>
           <th class="py-3 pr-2">Message</th>
           <th class="py-3 pr-2">Admin</th>
         </tr>
@@ -28,7 +26,7 @@
             <strong>{{ formatChange(entry.change) }}</strong>
           </td>
 
-          <td v-if="'memberName' in entry">
+          <td v-if="showMemberName">
             <em>{{ entry.member.name }}</em>
           </td>
 
@@ -49,9 +47,13 @@
 import dayjs from "dayjs";
 import type { HistoryEntry } from "../../types/HistoryEntry";
 
-defineProps<{
-  entries: HistoryEntry[];
-}>();
+withDefaults(
+  defineProps<{
+    entries: HistoryEntry[];
+    showMemberName: boolean;
+  }>(),
+  { showMemberName: true }
+);
 
 const formatTimestamp = (timestamp: Date) => {
   return dayjs(timestamp).format("D MMM YYYY\nhh:mm a");

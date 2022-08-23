@@ -29,7 +29,9 @@
         <RICPHistoryEntries
           v-if="sortedHistory.length > 0"
           :entries="sortedHistory"
-        ></RICPHistoryEntries>
+          :show-member-name="false"
+        >
+        </RICPHistoryEntries>
 
         <div v-else>No history</div>
       </DisclosurePanel>
