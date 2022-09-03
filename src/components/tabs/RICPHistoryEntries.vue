@@ -50,7 +50,7 @@ import type { HistoryEntry } from "../../types/HistoryEntry";
 withDefaults(
   defineProps<{
     entries: HistoryEntry[];
-    showMemberName: boolean;
+    showMemberName?: boolean;
   }>(),
   { showMemberName: true }
 );

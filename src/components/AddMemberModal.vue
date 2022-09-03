@@ -37,6 +37,7 @@ import { ref } from "vue";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
 import { useSnackbar } from "vue3-snackbar";
 import { usePointsStore } from "../stores/points.store";
+import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
 
 const $props = defineProps<{
   open: boolean;

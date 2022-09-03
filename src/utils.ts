@@ -10,3 +10,7 @@ export async function e<T, E extends Error>(
     return [null, error as E];
   }
 }
+
+export function clamp(v: number, lb: number, ub: number): number {
+  return Math.min(Math.max(v, lb), ub);
+}

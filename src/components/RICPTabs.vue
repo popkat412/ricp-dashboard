@@ -39,9 +39,11 @@ import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/vue";
 
 import RICPLeaderboard from "./tabs/RICPLeaderboard.vue";
 import RICPHistory from "./tabs/RICPHistory.vue";
+import RICPTasks from "./tabs/RICPTasks.vue";
 
 const tabs = {
   Leaderboard: RICPLeaderboard,
+  Tasks: RICPTasks,
   History: RICPHistory,
 };
 </script>

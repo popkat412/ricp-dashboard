@@ -8,17 +8,61 @@
   - document `<auto generated id>` (artificial id we give each member in case they have the same name or smth) 
     - integer `points`
     - string `name`
-    - subcollection `history`*
+    - subcollection `history`
       - document `<auto generated id>`
         - integer `change`
         - timestamp `timestamp`
         - string `message`
         - string `adminId`
+        - string | null `taskId` (the task associated with this addition of points)
+    - subcollection `tasksCompleted`
+      - document `<auto generated id>`
+        - string `task` (the id of the task that was completed)
+        - timestamp `dateCompleted`
+- collection `tasks`
+  - document `<auto generated id>`
+    - string `title`
+    - string `description`
+    - timestamp `dateAdded`
+    - timestamp | null `expiryDate`
+    - string `scoreFnName` *
+    - map `scoreFnParams`
 - collection `users` (admin users)
   - document `<uid>` (uid from firebase auth)
     - string `name`
 
-\* we can get the list of all history records by using [collection group queries](https://firebase.google.com/docs/firestore/query-data/queries#collection-group-query)
+\* see score functions docs below
+
+### Score Functions
+
+A score function `f(x)` for a task gives the score of the task `x` days after
+the task was first set (can be overridden with a start date).
+
+#### Parameters shared by all score functions
+
+- `ST = Current day`, the "start time" of the function. The function will be called as
+`f(x - ST)`.
+- `LB = 0`, the lower bound of the score function. The score function will be clamped
+between `L` and `U`
+- `UB = Infinity`, the upper bound of the score function. The score function will be clamped
+between `L` and `U`
+
+#### Constant
+
+**Mathematical expression**: `f(x) = C`
+**Additional parameters**:
+- `C = 100`, the number of points this task will be worth, always (the lower and
+upper bounds will still apply)
+
+#### Linear
+
+**Mathematical expression**: `f(x) = -Mx + C` (the negative is there for convenience)
+**Additional parameters**:
+- `M = 10`, the number of points that gets subtracted every day from the day 0 score
+- `C = 100`, the original number of points the task is worth on day 0 (i.e. if they solve
+it the day the task is announced)
+
+I might add more (such as exponential) in the future.
 
 ## Project Info
 

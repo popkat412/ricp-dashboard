@@ -69,6 +69,8 @@ import { ref } from "vue";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { useSnackbar } from "vue3-snackbar";
 
+import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
+
 import { useAuthStore } from "../stores/auth.store";
 
 const authStore = useAuthStore();

@@ -9,6 +9,7 @@ import {
 import { Either } from "../utils";
 import { Admin } from "./Admin";
 import { HistoryEntry } from "./HistoryEntry";
+import { Task } from "./Task";
 
 export interface FirebaseMember {
   name: string;
@@ -22,23 +23,31 @@ export interface FirebaseHistory {
   timestamp: Timestamp;
 }
 
+export interface TaskCompleted {
+  task: Task;
+  dateCompleted: Date;
+}
+
 export class Member {
   readonly id: string;
   name: string;
   points: number;
   history: HistoryEntry[];
+  tasksCompleted: TaskCompleted[];
 
   constructor(
     id: string,
     name: string,
     points: number,
-    history: HistoryEntry[]
+    history: HistoryEntry[],
+    tasksCompleted: TaskCompleted[]
   ) {
     this.id = id;
     this.name = name;
     this.points = points;
     this.history = history;
     this.history.forEach((v) => (v.member = this));
+    this.tasksCompleted = tasksCompleted;
   }
 
   static async fromDoc(

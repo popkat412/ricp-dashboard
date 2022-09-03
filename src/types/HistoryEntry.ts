@@ -1,5 +1,6 @@
 import type { Member } from "./Member";
 import type { Admin } from "./Admin";
+import { Task } from "./Task";
 
 export class HistoryEntry {
   id: string;
@@ -7,6 +8,7 @@ export class HistoryEntry {
   timestamp: Date;
   message: string;
   admin: Admin;
+  task: Task | null;
   member!: Member; // IMPORTANT: remember to set this later
 
   // i love OOP boilerplate
@@ -15,12 +17,14 @@ export class HistoryEntry {
     change: number,
     timestamp: Date,
     message: string,
-    admin: Admin
+    admin: Admin,
+    task: Task
   ) {
     this.id = id;
     this.change = change;
     this.timestamp = timestamp;
     this.message = message;
     this.admin = admin;
+    this.task = task;
   }
 }
