@@ -25,6 +25,7 @@
     - string `description`
     - timestamp `dateAdded`
     - timestamp | null `expiryDate`
+    - boolean `expired`
     - string `scoreFnName` *
     - map `scoreFnParams`
 - collection `users` (admin users)

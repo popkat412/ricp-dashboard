@@ -1,11 +1,29 @@
 import { clamp } from "../utils";
 
-export type ScoreFnName = "constant" | "linear";
+const SCORE_FN_NAMES = ["constant", "linear"] as const;
+export type ScoreFnName = typeof SCORE_FN_NAMES[number];
+
+export function isScoreFnName(scoreFnName: string): scoreFnName is ScoreFnName {
+  return SCORE_FN_NAMES.includes(scoreFnName as any);
+}
 
 interface BaseScoreFnArgs {
   st?: Date;
   lb?: number;
   ub?: number;
+}
+
+export function isBaseScoreFnParamsObj(scoreFnParams: {
+  [k: string]: unknown;
+}): scoreFnParams is { st: Date; lb: number; ub: number } {
+  return (
+    "st" in scoreFnParams &&
+    "lb" in scoreFnParams &&
+    "ub" in scoreFnParams &&
+    scoreFnParams.st instanceof Date &&
+    typeof scoreFnParams.ub == "number" &&
+    typeof scoreFnParams.lb == "number"
+  );
 }
 
 export abstract class ScoreFnParams {

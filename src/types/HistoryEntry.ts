@@ -18,7 +18,7 @@ export class HistoryEntry {
     timestamp: Date,
     message: string,
     admin: Admin,
-    task: Task
+    task: Task | null
   ) {
     this.id = id;
     this.change = change;
