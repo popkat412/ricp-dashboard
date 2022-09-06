@@ -7,6 +7,7 @@
           <th class="py-3 pr-2">Change</th>
           <th class="py-3 pr-2" v-if="showMemberName">Name</th>
           <th class="py-3 pr-2">Message</th>
+          <th class="py-3 pr-2">Task</th>
           <th class="py-3 pr-2">Admin</th>
         </tr>
       </thead>
@@ -32,6 +33,11 @@
 
           <td>
             {{ entry.message }}
+          </td>
+          
+          <td>
+            <!-- todo: link to the actual task (ugh means i'll need to set up router) -->
+            {{ entry.task?.title ?? '-'}}
           </td>
 
           <td>
