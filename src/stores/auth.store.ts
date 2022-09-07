@@ -11,7 +11,6 @@ import { defineStore } from "pinia";
 import { computed } from "vue";
 
 import { e, Either } from "../utils";
-import type { IAdminDocument } from "../types/IAdminDocument";
 
 export const useAuthStore = defineStore("auth", () => {
   // firebase stuff
@@ -29,7 +28,7 @@ export const useAuthStore = defineStore("auth", () => {
   const currentUserName = computed(() => {
     console.log("currentUserDoc.value", currentUserDoc.value);
     return currentUserDoc.value
-      ? (currentUserDoc.value as IAdminDocument).name
+      ? currentUserDoc.value.name
       : null;
   });
 
