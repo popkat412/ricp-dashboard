@@ -64,12 +64,12 @@ import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { useElementHover, useFocus } from "@vueuse/core";
 
-import RICPHistoryEntries from "./RICPHistoryEntries.vue";
-import RICPTaskEntries from "./RICPTaskEntries.vue";
-import AddPointsModal from "../AddPointsModal.vue";
-import { useAuthStore } from "../../stores/auth.store";
+import RICPHistoryEntries from "../history/RICPHistoryEntries.vue";
+import RICPTaskEntries from "../tasks/RICPTaskEntries.vue";
+import AddPointsModal from "../../modals/AddPointsModal.vue";
+import { useAuthStore } from "../../../stores/auth.store";
 
-import type { Member } from "../../types/Member";
+import type { Member } from "../../../types/Member";
 
 const $props = defineProps<{ position: number; leaderboardEntry: Member }>();
 

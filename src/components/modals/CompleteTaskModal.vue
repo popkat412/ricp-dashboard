@@ -52,10 +52,10 @@
 import { ref, computed } from "vue";
 import { Dialog, DialogPanel, DialogTitle, Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, ComboboxButton } from "@headlessui/vue";
 import { useSnackbar } from "vue3-snackbar";
-import { usePointsStore } from "../stores/points.store";
-import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
-import { Task } from "../types/Task";
-import { Member } from "../types/Member";
+import { usePointsStore } from "../../stores/points.store";
+import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
+import { Task } from "../../types/Task";
+import { Member } from "../../types/Member";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 
 

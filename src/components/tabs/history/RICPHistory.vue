@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePointsStore } from "../../stores/points.store";
+import { usePointsStore } from "../../../stores/points.store";
 import RICPHistoryEntries from "./RICPHistoryEntries.vue";
 
 const pointsStore = usePointsStore();

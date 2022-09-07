@@ -1,3 +1,4 @@
+<!-- todo: refactor out a separate base modal component -->
 <template>
   <Dialog
     :open="$props.open"
@@ -7,20 +8,12 @@
     <DialogPanel
       class="text-white flex flex-col justify-center p-4 bg-gray-800 max-w-sm mt-[15%] mx-auto space-y-3 drop-shadow-md"
     >
-      <DialogTitle>
-        Add (or subtract) points to {{ $props.memberName }}
-      </DialogTitle>
+      <DialogTitle>Add a member</DialogTitle>
       <input
         type="text"
-        placeholder="Amount (negative value subtracts points)"
-        class="focus-ring p-2 rounded-sm bg-gray-900"
-        v-model="amount"
-      />
-      <input
-        type="text"
-        placeholder="Message"
-        class="focus-ring p-2 rounded-sm bg-gray-900"
-        v-model="message"
+        placeholder="Name"
+        class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2"
+        v-model="name"
       />
 
       <BaseLoadingIndicator
@@ -31,8 +24,8 @@
         <button class="focus-ring p-1 rounded-sm" @click="$emit('close')">
           Cancel
         </button>
-        <button class="focus-ring p-1 rounded-sm bg-sky-700" @click="addPoints">
-          Add points
+        <button class="focus-ring p-1 rounded-sm bg-sky-700" @click="addMember">
+          Add member
         </button>
       </div>
     </DialogPanel>
@@ -43,48 +36,41 @@
 import { ref } from "vue";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
 import { useSnackbar } from "vue3-snackbar";
-
-import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
-import { usePointsStore } from "../stores/points.store";
+import { usePointsStore } from "../../stores/points.store";
+import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
 
 const $props = defineProps<{
   open: boolean;
-  memberName: string;
-  memberId: string;
 }>();
 const $emit = defineEmits<{
   (e: "close"): void;
 }>();
 
 const pointsStore = usePointsStore();
-
-const amount = ref("");
-const message = ref("");
-const loading = ref(false);
-
 const snackbar = useSnackbar();
 
-const addPoints = async () => {
-  const parsedAmount = parseInt(amount.value, 10);
+const name = ref("");
+const loading = ref(false);
 
-  if (isNaN(parsedAmount)) {
-    snackbar.add({ type: "error", title: "Amount is not a valid integer" });
+const addMember = async () => {
+  if (name.value == "") {
+    snackbar.add({ type: "error", title: "Name cannot be empty" });
     return;
   }
 
   loading.value = true;
 
-  const err = await pointsStore.addPoints({
-    id: $props.memberId,
-    change: parsedAmount,
-    message: message.value
-});
+  const err = await pointsStore.addMember(name.value);
   if (err) {
     snackbar.add({ type: "error", title: "Error", text: err });
     return;
   }
 
   loading.value = false;
+  snackbar.add({
+    type: "success",
+    title: `Successfully added member ${name.value}`,
+  });
   $emit("close");
 };
 </script>

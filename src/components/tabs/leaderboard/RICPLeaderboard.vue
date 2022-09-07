@@ -36,11 +36,11 @@
 import { ref } from "vue";
 
 import RICPLeaderboardEntry from "./RICPLeaderboardEntry.vue";
-import AddMemberModal from "../AddMemberModal.vue";
-import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
+import AddMemberModal from "../../modals/AddMemberModal.vue";
+import BaseLoadingIndicator from "../../BaseLoadingIndicator.vue";
 
-import { usePointsStore } from "../../stores/points.store";
-import { useAuthStore } from "../../stores/auth.store";
+import { usePointsStore } from "../../../stores/points.store";
+import { useAuthStore } from "../../../stores/auth.store";
 
 const pointsStore = usePointsStore();
 const authStore = useAuthStore();

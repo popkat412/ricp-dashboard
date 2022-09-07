@@ -107,9 +107,9 @@
 import { Ref, ref, unref, watch } from "vue";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
 import { useSnackbar } from "vue3-snackbar";
-import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
-import { useTasksStore } from "../stores/tasks.store";
-import { ScoreFnName, SCORE_FN_NAMES } from "../types/ScoreFn";
+import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
+import { useTasksStore } from "../../stores/tasks.store";
+import { ScoreFnName, SCORE_FN_NAMES } from "../../types/ScoreFn";
 import { start } from "repl";
 
 const $props = defineProps<{

@@ -30,12 +30,12 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useAuthStore } from "../../stores/auth.store";
-import {useTasksStore} from "../../stores/tasks.store";
+import { useAuthStore } from "../../../stores/auth.store";
+import {useTasksStore} from "../../../stores/tasks.store";
 import RICPTaskEntries from "./RICPTaskEntries.vue";
-import AddTaskModal from "../AddTaskModal.vue";
-import { Task } from "../../types/Task";
-import CompleteTaskModal from "../CompleteTaskModal.vue";
+import AddTaskModal from "../../modals/AddTaskModal.vue";
+import { Task } from "../../../types/Task";
+import CompleteTaskModal from "../../modals/CompleteTaskModal.vue";
 
 const tasksStore = useTasksStore();
 const authStore = useAuthStore();

@@ -51,10 +51,10 @@
 </template>
 
 <script setup lang="ts">
-import { TaskCompleted } from '../../types/Member';
-import { Task } from '../../types/Task';
+import { TaskCompleted } from '../../../types/Member';
+import { Task } from '../../../types/Task';
 import { CheckCircleIcon } from "@heroicons/vue/24/outline";
-import { useAuthStore } from '../../stores/auth.store';
+import { useAuthStore } from '../../../stores/auth.store';
 
 withDefaults(defineProps<{ tasks: Task[] | TaskCompleted[]; centreAlign?: boolean; onCompleted?: (task: Task) => void}>(), {centreAlign: true});
 
