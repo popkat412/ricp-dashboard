@@ -34,10 +34,10 @@
           <td>
             {{ entry.message }}
           </td>
-          
+
           <td>
             <!-- todo: link to the actual task (ugh means i'll need to set up router) -->
-            {{ entry.task?.title ?? '-'}}
+            {{ entry.task?.title ?? "-" }}
           </td>
 
           <td>

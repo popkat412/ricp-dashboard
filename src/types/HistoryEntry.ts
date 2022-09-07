@@ -31,6 +31,8 @@ export class HistoryEntry {
   get change(): number {
     if (this._change != null) return this._change;
     if (this.task) return this.task.getScore(this.timestamp);
-    throw new Error(`both #change and task is null for history entry ${this.id}`);
+    throw new Error(
+      `both #change and task is null for history entry ${this.id}`
+    );
   }
 }

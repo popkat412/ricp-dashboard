@@ -5,7 +5,7 @@
 ### Firestore data model
 
 - collection `members` (members of RICP)
-  - document `<auto generated id>` (artificial id we give each member in case they have the same name or smth) 
+  - document `<auto generated id>` (artificial id we give each member in case they have the same name or smth)
     - string `name`
     - subcollection `history`
       - document `<auto generated id>`
@@ -21,7 +21,7 @@
     - timestamp `dateAdded`
     - timestamp | null `expiryDate`
     - boolean `expired`
-    - string `scoreFnName` *
+    - string `scoreFnName` \*
     - map `scoreFnParams`
 - collection `users` (admin users)
   - document `<uid>` (uid from firebase auth)
@@ -37,26 +37,28 @@ the task was first set (can be overridden with a start date).
 #### Parameters shared by all score functions
 
 - `ST = Current day`, the "start time" of the function. The function will be called as
-`f(x - ST)`.
+  `f(x - ST)`.
 - `LB = 0`, the lower bound of the score function. The score function will be clamped
-between `L` and `U`
+  between `L` and `U`
 - `UB = Infinity`, the upper bound of the score function. The score function will be clamped
-between `L` and `U`
+  between `L` and `U`
 
 #### Constant
 
 **Mathematical expression**: `f(x) = C`
 **Additional parameters**:
+
 - `C = 100`, the number of points this task will be worth, always (the lower and
-upper bounds will still apply)
+  upper bounds will still apply)
 
 #### Linear
 
 **Mathematical expression**: `f(x) = -Mx + C` (the negative is there for convenience)
 **Additional parameters**:
+
 - `M = 10`, the number of points that gets subtracted every day from the day 0 score
 - `C = 100`, the original number of points the task is worth on day 0 (i.e. if they solve
-it the day the task is announced)
+  it the day the task is announced)
 
 I might add more (such as exponential) in the future.
 

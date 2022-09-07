@@ -26,25 +26,28 @@
       <DisclosurePanel
         class="px-4 py-4 text-sm text-blue-100 bg-white/[0.05] rounded-lg mt-1 mb-1 max-h-[50vh] overflow-scroll"
       >
-      <div class="my-1">
-        <div v-if="sortedHistory.length > 0">
-          <p class="mb-1"><strong>History</strong></p>
-          <RICPHistoryEntries
-            :entries="sortedHistory"
-            :show-member-name="false"
-          >
-          </RICPHistoryEntries>
+        <div class="my-1">
+          <div v-if="sortedHistory.length > 0">
+            <p class="mb-1"><strong>History</strong></p>
+            <RICPHistoryEntries
+              :entries="sortedHistory"
+              :show-member-name="false"
+            >
+            </RICPHistoryEntries>
+          </div>
+          <div v-else><em>No history</em></div>
         </div>
-        <div v-else><em>No history</em></div>
-      </div>
 
-      <div class="mb-1 mt-3">
-        <div v-if="sortedTasks.length > 0">
-          <p class="mb-1"><strong>Tasks completed</strong></p>
-          <RICPTaskEntries :tasks="sortedTasks" :centre-align="false"></RICPTaskEntries>
+        <div class="mb-1 mt-3">
+          <div v-if="sortedTasks.length > 0">
+            <p class="mb-1"><strong>Tasks completed</strong></p>
+            <RICPTaskEntries
+              :tasks="sortedTasks"
+              :centre-align="false"
+            ></RICPTaskEntries>
+          </div>
+          <div v-else><em>No tasks completed</em></div>
         </div>
-        <div v-else><em>No tasks completed</em></div>
-      </div>
       </DisclosurePanel>
     </Disclosure>
   </div>
@@ -87,7 +90,11 @@ const sortedHistory = computed(() =>
   )
 );
 
-const sortedTasks = computed(() => [...$props.leaderboardEntry.tasksCompleted].sort((a, b)=> b.dateCompleted.getTime() - a.dateCompleted.getTime()));
+const sortedTasks = computed(() =>
+  [...$props.leaderboardEntry.tasksCompleted].sort(
+    (a, b) => b.dateCompleted.getTime() - a.dateCompleted.getTime()
+  )
+);
 
 const addPoints = () => {
   addPointsModalOpen.value = true;

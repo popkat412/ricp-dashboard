@@ -27,9 +27,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   const currentUserName = computed(() => {
     console.log("currentUserDoc.value", currentUserDoc.value);
-    return currentUserDoc.value
-      ? currentUserDoc.value.name
-      : null;
+    return currentUserDoc.value ? currentUserDoc.value.name : null;
   });
 
   const signIn = async (

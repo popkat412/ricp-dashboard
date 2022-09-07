@@ -14,11 +14,11 @@ export async function e<T, E extends Error>(
 }
 
 export type TimestampsToDate<T> = {
-  [Key in keyof T]: T[Key] extends Timestamp 
-    ? Date 
-    : T[Key] extends (Timestamp | null) 
-      ? (Date | null)
-      : T[Key];
+  [Key in keyof T]: T[Key] extends Timestamp
+    ? Date
+    : T[Key] extends Timestamp | null
+    ? Date | null
+    : T[Key];
 };
 
 export function clamp(v: number, lb: number, ub: number): number {

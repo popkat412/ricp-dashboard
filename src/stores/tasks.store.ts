@@ -1,4 +1,12 @@
-import { addDoc, collection, doc, DocumentReference, getFirestore, onSnapshot, Timestamp } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  DocumentReference,
+  getFirestore,
+  onSnapshot,
+  Timestamp,
+} from "firebase/firestore";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { FirebaseTask, Task } from "../types/Task";
@@ -11,7 +19,7 @@ export const useTasksStore = defineStore("tasks", () => {
   const authStore = useAuthStore();
 
   const finishedInitialLoad = ref(false);
-  
+
   // tasks
   const tasks = ref<Task[]>([]);
   onSnapshot(collection(db, "tasks"), async (snapshot) => {
@@ -47,7 +55,9 @@ export const useTasksStore = defineStore("tasks", () => {
   });
 
   // add task
-  const addTask = async (task: TimestampsToDate<FirebaseTask>): Promise<string | null> => {
+  const addTask = async (
+    task: TimestampsToDate<FirebaseTask>
+  ): Promise<string | null> => {
     console.log(task);
 
     if (!(authStore.isAuthenticated && authStore.user?.uid)) {
@@ -62,7 +72,7 @@ export const useTasksStore = defineStore("tasks", () => {
     }
 
     return null;
-  }
+  };
 
   return { finishedInitialLoad, tasks, addTask };
 });

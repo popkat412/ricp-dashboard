@@ -14,7 +14,9 @@ import { useAuthStore } from "./auth.store";
 import { FirebaseMember, Member } from "../types/Member";
 import { Task } from "../types/Task";
 
-export type AddPointsData = { id: string; change: number; message: string } | { id: string; task: Task };
+export type AddPointsData =
+  | { id: string; change: number; message: string }
+  | { id: string; task: Task };
 
 export const usePointsStore = defineStore("points", () => {
   const db = getFirestore();
@@ -35,7 +37,7 @@ export const usePointsStore = defineStore("points", () => {
       members.value.splice(idx, 1);
     };
     const addMemberFromDocRef = async (docRef: DocumentReference) => {
-      const [member, err] = await Member.fromId( docRef.id);
+      const [member, err] = await Member.fromId(docRef.id);
       if (member) {
         members.value.push(member);
       } else {
@@ -86,9 +88,9 @@ export const usePointsStore = defineStore("points", () => {
 
     // check if member has completed task before
     if ("task" in data) {
-      const [member,err] = await Member.fromId(data.id);
+      const [member, err] = await Member.fromId(data.id);
       if (err) return `error getting member: ${err}`;
-      
+
       if (member.hasCompletedTask(data.task)) {
         return `member ${member.name} has already completed task ${data.task.title}`;
       }
