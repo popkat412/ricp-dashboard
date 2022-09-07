@@ -1,5 +1,22 @@
 # RICP Dashboard
 
+## Todo
+
+Features
+- [ ] Edit tasks
+- [ ] "Expire"/Archive tasks
+- [ ] Router
+- [ ] Merge "message" and "task" in history entries
+- [ ] Show list of people who have completed a particular task
+- [ ] Archive members
+- [ ] Multiple selections and actions
+
+Code stuff
+- [ ] Extract duplicated modal stuff
+- [ ] Fix the using classes in defineProps issue
+- [ ] Consistent error handling
+- [ ] Have a fromId for Member
+
 ## Docs
 
 ### Firestore data model
