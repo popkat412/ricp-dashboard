@@ -9,16 +9,15 @@ import {
 import { Either } from "../utils";
 import { Admin } from "./Admin";
 import { HistoryEntry } from "./HistoryEntry";
-import { FirebaseTask, Task } from "./Task";
+import { Task } from "./Task";
 
 export interface FirebaseMember {
   name: string;
-  points: number;
 }
 
 export interface FirebaseHistory {
   adminId: string;
-  change: number;
+  change: number | null;
   message: string;
   timestamp: Timestamp;
   taskId: string | null;
@@ -32,22 +31,20 @@ export interface TaskCompleted {
 export class Member {
   readonly id: string;
   name: string;
-  points: number;
   history: HistoryEntry[];
 
   constructor(
     id: string,
     name: string,
-    points: number,
     history: HistoryEntry[],
   ) {
     this.id = id;
     this.name = name;
-    this.points = points;
     this.history = history;
     this.history.forEach((v) => (v.member = this));
   }
 
+  // todo: refactor this to be fromId
   static async fromDoc(
     docRef: DocumentReference<FirebaseMember>
   ): Promise<Either<Member, Error>> {
@@ -65,6 +62,7 @@ export class Member {
       const historyDocs = (
         await getDocs(collection(db, docRef.path, "history"))
       ).docs;
+      // todo: refactor this to have a fromId 
       history = await Promise.all(
         historyDocs.map(async (v) => {
           const { adminId, change, message, timestamp, taskId } = v.data({
@@ -87,9 +85,13 @@ export class Member {
     }
 
     return [
-      new Member(docRef.id, data.name, data.points, history),
+      new Member(docRef.id, data.name, history),
       null,
     ];
+  }
+
+  get points(): number {
+    return this.history.reduce((acc, v) => acc + v.change, 0);
   }
 
   get tasksCompleted(): TaskCompleted[] {

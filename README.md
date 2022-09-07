@@ -6,11 +6,10 @@
 
 - collection `members` (members of RICP)
   - document `<auto generated id>` (artificial id we give each member in case they have the same name or smth) 
-    - integer `points`
     - string `name`
     - subcollection `history`
       - document `<auto generated id>`
-        - integer `change`
+        - integer | null `change`
         - timestamp `timestamp`
         - string `message`
         - string `adminId`
