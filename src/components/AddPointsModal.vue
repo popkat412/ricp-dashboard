@@ -74,11 +74,11 @@ const addPoints = async () => {
 
   loading.value = true;
 
-  const err = await pointsStore.addPoints(
-    $props.memberId,
-    parsedAmount,
-    message.value
-  );
+  const err = await pointsStore.addPoints({
+    id: $props.memberId,
+    change: parsedAmount,
+    message: message.value
+});
   if (err) {
     snackbar.add({ type: "error", title: "Error", text: err });
     return;

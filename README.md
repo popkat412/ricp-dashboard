@@ -9,9 +9,9 @@
     - string `name`
     - subcollection `history`
       - document `<auto generated id>`
-        - integer | null `change`
+        - integer | null `change` (either change and message is null OR task is null)
         - timestamp `timestamp`
-        - string `message`
+        - string | null `message`
         - string `adminId`
         - string | null `taskId` (the task associated with this addition of points)
 - collection `tasks`

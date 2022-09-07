@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="tasksStore.finishedInitialLoad">
-      <RICPTaskEntries v-if="tasksStore.tasks.length > 0" :tasks="tasksStore.tasks">
+      <RICPTaskEntries v-if="tasksStore.tasks.length > 0" :tasks="tasksStore.tasks" :on-completed="onCompleted">
       </RICPTaskEntries>
     </div>
   </div>
@@ -20,6 +20,12 @@
     :open="addTaskModalOpen"
     @close="addTaskModalOpen = false"
   ></AddTaskModal>
+
+  <CompleteTaskModal 
+    :open="completeTaskModalOpen" 
+    @close="closeCompleteTaskModal" 
+    :task="completeTaskModalTask"
+  ></CompleteTaskModal>
 </template>
 
 <script setup lang="ts">
@@ -28,9 +34,24 @@ import { useAuthStore } from "../../stores/auth.store";
 import {useTasksStore} from "../../stores/tasks.store";
 import RICPTaskEntries from "./RICPTaskEntries.vue";
 import AddTaskModal from "../AddTaskModal.vue";
+import { Task } from "../../types/Task";
+import CompleteTaskModal from "../CompleteTaskModal.vue";
 
 const tasksStore = useTasksStore();
 const authStore = useAuthStore();
 
 const addTaskModalOpen = ref(false);
+
+const completeTaskModalOpen = ref(false);
+const completeTaskModalTask = ref<Task | null>(null);
+
+const onCompleted = (task: Task) => {
+  console.log("on completed", task);
+  completeTaskModalOpen.value = true;
+  completeTaskModalTask.value = task;
+}
+const closeCompleteTaskModal = () => {
+  completeTaskModalOpen.value = false;
+  completeTaskModalTask.value = null;
+}
 </script>

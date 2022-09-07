@@ -18,7 +18,7 @@ export interface FirebaseMember {
 export interface FirebaseHistory {
   adminId: string;
   change: number | null;
-  message: string;
+  message: string | null;
   timestamp: Timestamp;
   taskId: string | null;
 }

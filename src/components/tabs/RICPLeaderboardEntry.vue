@@ -61,7 +61,7 @@
 import { ref, computed } from "vue";
 import type { Ref } from "vue";
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
-import { ChevronUpIcon } from "@heroicons/vue/solid";
+import { ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { useElementHover, useFocus } from "@vueuse/core";
 
 import RICPHistoryEntries from "./RICPHistoryEntries.vue";

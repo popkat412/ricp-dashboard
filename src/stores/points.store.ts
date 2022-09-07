@@ -4,15 +4,17 @@ import {
   doc,
   DocumentReference,
   getFirestore,
-  increment,
   onSnapshot,
   serverTimestamp,
-  writeBatch,
+  setDoc,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, readonly, ref } from "vue";
 import { useAuthStore } from "./auth.store";
 import { FirebaseMember, Member } from "../types/Member";
+import { Task } from "../types/Task";
+
+export type AddPointsData = { id: string; change: number; message: string } | { id: string; task: Task };
 
 export const usePointsStore = defineStore("points", () => {
   const db = getFirestore();
@@ -76,32 +78,21 @@ export const usePointsStore = defineStore("points", () => {
 
   // todo: refactor to use more consistent error handling throughout
   // a string return will be an error, null return means no error
-  const addPoints = async (
-    memberId: string,
-    deltaAmount: number,
-    message: string
-  ): Promise<string | null> => {
-    const batch = writeBatch(db);
-
-    const docRef = doc(db, "members", memberId);
+  const addPoints = async (data: AddPointsData): Promise<string | null> => {
+    const docRef = doc(db, "members", data.id);
     const newHistoryEntry = doc(collection(db, docRef.path, "history"));
 
     if (!(authStore.isAuthenticated && authStore.user?.uid)) {
       return "cannot modify points, not signed in as admin";
     }
 
-    batch
-      .update(docRef, {
-        points: increment(deltaAmount),
-      })
-      .set(newHistoryEntry, {
-        adminId: authStore.user.uid,
-        change: deltaAmount,
-        message,
-        timestamp: serverTimestamp(),
-      });
-
-    await batch.commit();
+    await setDoc(newHistoryEntry, {
+      adminId: authStore.user.uid,
+      change: (data as any).change ?? null,
+      message: (data as any).message ?? null,
+      taskId: (data as any).task?.id ?? null,
+      timestamp: serverTimestamp(),
+    });
 
     return null;
   };

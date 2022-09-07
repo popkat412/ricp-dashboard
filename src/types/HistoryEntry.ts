@@ -6,7 +6,7 @@ export class HistoryEntry {
   id: string;
   _change: number | null;
   timestamp: Date;
-  message: string;
+  message: string | null;
   admin: Admin;
   task: Task | null;
   member!: Member; // IMPORTANT: remember to set this later
@@ -16,7 +16,7 @@ export class HistoryEntry {
     id: string,
     change: number | null,
     timestamp: Date,
-    message: string,
+    message: string | null,
     admin: Admin,
     task: Task | null
   ) {

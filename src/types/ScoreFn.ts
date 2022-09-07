@@ -53,7 +53,7 @@ export abstract class ScoreFnParams {
     return clamp(y, this.lb, this.ub);
   }
 
-  // v is the number of days that has passed (should be a whole number)
+  // x is the number of days that has passed (should be a whole number)
   protected abstract evaluate(x: number): number;
 }
 

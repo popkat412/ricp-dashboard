@@ -1,7 +1,7 @@
 <template>
   <div class="grid gap-3 grid-cols-[repeat(auto-fit,_minmax(0,_20rem))]" :class="[$props.centreAlign ? 'justify-center' : '']">
     <div
-      class="focus-ring flex flex-col justify-items-stretch items-center rounded-lg bg-blue-100/10 px-4 py-2 text-left text-blue-100"
+      class="focus-ring flex flex-col justify-items-stretch items-center rounded-lg bg-blue-100/10 p-3 text-left text-blue-100"
       v-for="(task, idx) in $props.tasks" :key="idx">
 
       <div class="w-full">
@@ -16,18 +16,33 @@
             <div>points</div>
           </div>
         </div>
-        <div v-if="'dateCompleted' in task">
-          <em>Completed {{ task.dateCompleted.toLocaleDateString() }}</em>
-        </div>
-        <div class="text-white/50 mt-1">
+        <div class="flex flex-row">
           <div>
-            Score function: {{ getScoreFnName(task) }}
+            <div v-if="'dateCompleted' in task">
+              <em>Completed {{ task.dateCompleted.toLocaleDateString() }}</em>
+            </div>
+            <div class="text-white/50 mt-1">
+              <div>
+                Score function: {{ getScoreFnName(task) }}
+              </div>
+              <div>
+                Date added: {{ getDateAdded(task) }}
+              </div>
+              <div>
+                Expiry date: {{ getExpiryDate(task) }}
+              </div>
+            </div>
           </div>
-          <div>
-            Date added: {{ getDateAdded(task) }}
-          </div>
-          <div>
-            Expiry date: {{ getExpiryDate(task) }}
+          <div class="flex-grow"></div>
+          <div class="relative">
+            <button 
+              v-if="$props.onCompleted && authStore.isAuthenticated" 
+              class="absolute bottom-0 right-0" 
+              @click="$props.onCompleted!(task instanceof Task ? task : task.task)"
+              title="Mark as completed for member"
+            >
+              <CheckCircleIcon class="text-slate-100 h-10 w-10"/>
+            </button>
           </div>
         </div>
       </div>
@@ -38,8 +53,12 @@
 <script setup lang="ts">
 import { TaskCompleted } from '../../types/Member';
 import { Task } from '../../types/Task';
+import { CheckCircleIcon } from "@heroicons/vue/24/outline";
+import { useAuthStore } from '../../stores/auth.store';
 
-withDefaults(defineProps<{ tasks: Task[] | TaskCompleted[], centreAlign?: boolean }>(), {centreAlign: true});
+withDefaults(defineProps<{ tasks: Task[] | TaskCompleted[]; centreAlign?: boolean; onCompleted?: (task: Task) => void}>(), {centreAlign: true});
+
+const authStore = useAuthStore();
 
 const getTitle = (task: Task | TaskCompleted) => task instanceof Task ? task.title : task.task.title;
 const getDescription = (task: Task | TaskCompleted) => task instanceof Task ? task.description : task.task.description;
