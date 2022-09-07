@@ -76,7 +76,7 @@ const dummyMember = new Member("dummy", "", []);
 const selectedMember= ref(dummyMember);
 
 const filteredMembers = computed(() => 
-  query.value == "" ? pointsStore.members : pointsStore.members.filter((member) => member.name.toLowerCase().replace(/\s+/g, '').includes(query.value.toLowerCase().replace(/\s+/g, '')))
+  pointsStore.members.filter((member) => !member.hasCompletedTask($props.task!) && (query.value == "" ? true : member.name.toLowerCase().replace(/\s+/g, '').includes(query.value.toLowerCase().replace(/\s+/g, ''))))
 );
 
 const loading = ref(false);

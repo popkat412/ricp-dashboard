@@ -1,5 +1,6 @@
 import {
   collection,
+  doc,
   DocumentReference,
   getDoc,
   getDocs,
@@ -44,9 +45,8 @@ export class Member {
     this.history.forEach((v) => (v.member = this));
   }
 
-  // todo: refactor this to be fromId
-  static async fromDoc(
-    docRef: DocumentReference<FirebaseMember>
+  static async fromId(
+    id: string,
   ): Promise<Either<Member, Error>> {
     // todo: better error handling
     // ugh this is why swift/haskell/rust is better, they make sure
@@ -54,13 +54,13 @@ export class Member {
     // and force you to handle it, instead of crashing at runtime
     const db = getFirestore();
 
-    const data = (await getDoc<FirebaseMember>(docRef)).data();
-    if (!data) return [null, new Error(`document ${docRef.id} doesn't exist`)];
+    const data = (await getDoc<FirebaseMember>(doc(db, "members", id) as DocumentReference<FirebaseMember>)).data();
+    if (!data) return [null, new Error(`member ${id} doesn't exist`)];
 
     let history: HistoryEntry[] = [];
     try {
       const historyDocs = (
-        await getDocs(collection(db, docRef.path, "history"))
+        await getDocs(collection(db, "members", id, "history"))
       ).docs;
       // todo: refactor this to have a fromId 
       history = await Promise.all(
@@ -81,11 +81,11 @@ export class Member {
         })
       );
     } catch (e) {
-      console.error(`could not get history for member ${docRef.id}`, e);
+      console.error(`could not get history for member ${id}`, e);
     }
 
     return [
-      new Member(docRef.id, data.name, history),
+      new Member(id, data.name, history),
       null,
     ];
   }
@@ -96,5 +96,9 @@ export class Member {
 
   get tasksCompleted(): TaskCompleted[] {
     return this.history.flatMap(v => v.task ? [{task: v.task, dateCompleted: v.timestamp}] : []);
+  }
+
+  hasCompletedTask(task: Task): boolean {
+    return !!this.tasksCompleted.find(v => v.task.id == task.id);
   }
 }
