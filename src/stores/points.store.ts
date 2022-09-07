@@ -87,7 +87,7 @@ export const usePointsStore = defineStore("points", () => {
     const newHistoryEntry = doc(collection(db, docRef.path, "history"));
 
     if (!(authStore.isAuthenticated && authStore.user?.uid)) {
-      throw "cannot modify points, not signed in as admin";
+      return "cannot modify points, not signed in as admin";
     }
 
     batch

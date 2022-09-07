@@ -12,7 +12,7 @@ export interface FirebaseTask {
   description: string;
   dateAdded: Timestamp;
   expiryDate: Timestamp | null;
-  scoreFnName: string;
+  scoreFnName: ScoreFnName;
   scoreFnParams: { [k: string]: unknown };
   expired: boolean;
 }

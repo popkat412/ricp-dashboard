@@ -1,13 +1,13 @@
 import { clamp } from "../utils";
 
-const SCORE_FN_NAMES = ["constant", "linear"] as const;
+export const SCORE_FN_NAMES = ["constant", "linear"] as const;
 export type ScoreFnName = typeof SCORE_FN_NAMES[number];
 
 export function isScoreFnName(scoreFnName: string): scoreFnName is ScoreFnName {
   return SCORE_FN_NAMES.includes(scoreFnName as any);
 }
 
-interface BaseScoreFnArgs {
+export interface BaseScoreFnArgs {
   st?: Date;
   lb?: number;
   ub?: number;
@@ -31,7 +31,7 @@ export abstract class ScoreFnParams {
   lb: number;
   ub: number;
 
-  constructor({ st = new Date(), lb = 0, ub = Infinity }: BaseScoreFnArgs) {
+  constructor({ st = new Date(), lb = 0, ub = 999 }: BaseScoreFnArgs) {
     this.st = st;
     this.lb = lb;
     this.ub = ub;

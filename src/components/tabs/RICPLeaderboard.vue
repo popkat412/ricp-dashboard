@@ -7,7 +7,7 @@
           v-for="(entry, idx) in pointsStore.leaderboardEntries"
           :key="idx"
           :position="idx + 1"
-          :leaderboardEntry="entry"
+          :leaderboard-entry="entry"
         ></RICPLeaderboardEntry>
       </ol>
       <div v-else>No members</div>

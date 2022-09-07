@@ -1,15 +1,19 @@
-import { collection, DocumentReference, getFirestore, onSnapshot } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentReference, getFirestore, onSnapshot, Timestamp } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { Task } from "../types/Task";
+import { FirebaseTask, Task } from "../types/Task";
+import { TimestampsToDate } from "../utils";
+import { useAuthStore } from "./auth.store";
 
 // todo: remove duplicate between this and points store
 export const useTasksStore = defineStore("tasks", () => {
   const db = getFirestore();
+  const authStore = useAuthStore();
 
   const finishedInitialLoad = ref(false);
+  
+  // tasks
   const tasks = ref<Task[]>([]);
-
   onSnapshot(collection(db, "tasks"), async (snapshot) => {
     const removeTaskById = (id: string) => {
       const idx = tasks.value.findIndex((v) => v.id == id);
@@ -42,5 +46,23 @@ export const useTasksStore = defineStore("tasks", () => {
     finishedInitialLoad.value = true;
   });
 
-  return { finishedInitialLoad, tasks };
+  // add task
+  const addTask = async (task: TimestampsToDate<FirebaseTask>): Promise<string | null> => {
+    console.log(task);
+
+    if (!(authStore.isAuthenticated && authStore.user?.uid)) {
+      return "cannot modify points, not signed in as admin";
+    }
+
+    try {
+      await addDoc(collection(db, "tasks"), task);
+    } catch (e) {
+      console.error(e);
+      return `could not add task: ${e}`;
+    }
+
+    return null;
+  }
+
+  return { finishedInitialLoad, tasks, addTask };
 });
