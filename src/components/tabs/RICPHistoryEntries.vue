@@ -50,7 +50,6 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
 import type { HistoryEntry } from "../../types/HistoryEntry";
 
 withDefaults(
@@ -62,7 +61,7 @@ withDefaults(
 );
 
 const formatTimestamp = (timestamp: Date) => {
-  return dayjs(timestamp).format("D MMM YYYY\nhh:mm a");
+  return `${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}`;
 };
 
 const formatChange = (change: number) => {

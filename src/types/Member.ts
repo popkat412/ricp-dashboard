@@ -34,21 +34,18 @@ export class Member {
   name: string;
   points: number;
   history: HistoryEntry[];
-  tasksCompleted: TaskCompleted[];
 
   constructor(
     id: string,
     name: string,
     points: number,
     history: HistoryEntry[],
-    tasksCompleted: TaskCompleted[]
   ) {
     this.id = id;
     this.name = name;
     this.points = points;
     this.history = history;
     this.history.forEach((v) => (v.member = this));
-    this.tasksCompleted = tasksCompleted;
   }
 
   static async fromDoc(
@@ -89,29 +86,13 @@ export class Member {
       console.error(`could not get history for member ${docRef.id}`, e);
     }
 
-    let tasksCompleted: TaskCompleted[] = [];
-    try {
-      const tasksCompletedDocs = (
-        await getDocs(collection(db, docRef.path, "tasksCompleted"))
-      ).docs;
-      tasksCompleted = await Promise.all(
-        tasksCompletedDocs.map(async (v) => {
-          const { task, dateCompleted } = v.data({
-            serverTimestamps: "estimate",
-          }) as { task: string; dateCompleted: Timestamp };
-          return {
-            task: await Task.fromId(task),
-            dateCompleted: dateCompleted.toDate(),
-          };
-        })
-      );
-    } catch (e) {
-      console.error(`could not get tasks completed for member ${docRef.id}`, e);
-    }
-
     return [
-      new Member(docRef.id, data.name, data.points, history, tasksCompleted),
+      new Member(docRef.id, data.name, data.points, history),
       null,
     ];
+  }
+
+  get tasksCompleted(): TaskCompleted[] {
+    return this.history.flatMap(v => v.task ? [{task: v.task, dateCompleted: v.timestamp}] : []);
   }
 }

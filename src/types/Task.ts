@@ -79,6 +79,10 @@ export class Task {
     );
   }
 
+  getScore(date: Date): number {
+    return this.scoreFnParams.calculateScore(date);
+  }
+
   private static convertScoreFnParams(
     scoreFnName: ScoreFnName,
     scoreFnParams: { [k: string]: unknown }
