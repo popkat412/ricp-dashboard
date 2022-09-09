@@ -10,8 +10,6 @@ import { doc, getFirestore } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { computed } from "vue";
 
-import { e, Either } from "../utils";
-
 export const useAuthStore = defineStore("auth", () => {
   // firebase stuff
   const auth = getAuth();
@@ -30,18 +28,21 @@ export const useAuthStore = defineStore("auth", () => {
     return currentUserDoc.value ? currentUserDoc.value.name : null;
   });
 
-  const signIn = async (
-    email: string,
-    password: string
-  ): Promise<Either<UserCredential, AuthError>> => {
-    return e(signInWithEmailAndPassword(auth, email, password));
+  /**
+   * Admin sign in with email and password using firebase auth.
+   * @param email
+   * @param password
+   * @throws
+   */
+  const signIn = (email: string, password: string): Promise<UserCredential> => {
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signOut = async (): Promise<AuthError | null> => {
-    return (
-      await e<undefined, AuthError>(firebaseSignOut(auth) as Promise<undefined>)
-    )[1];
-  };
+  /**
+   * Admin sign out.
+   * @throws
+   */
+  const signOut = (): Promise<void> => firebaseSignOut(auth);
 
   return {
     isAuthenticated,

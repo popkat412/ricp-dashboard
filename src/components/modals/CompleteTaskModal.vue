@@ -138,12 +138,14 @@ const markAsCompleted = async () => {
 
   loading.value = true;
 
-  const err = await pointsStore.addPoints({
-    id: selectedMember.value.id,
-    task: $props.task!,
-  });
-  if (err) {
-    snackbar.add({ type: "error", title: "Error", text: err });
+  try {
+    await pointsStore.addPoints({
+      id: selectedMember.value.id,
+      task: $props.task!,
+    });
+  } catch (e) {
+    snackbar.add({ type: "error", title: "Error", text: `${e}` });
+    loading.value = false;
     return;
   }
 

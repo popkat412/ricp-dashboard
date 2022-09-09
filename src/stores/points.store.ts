@@ -7,12 +7,21 @@ import {
   onSnapshot,
   serverTimestamp,
   setDoc,
+  Timestamp,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, readonly, ref } from "vue";
 import { useAuthStore } from "./auth.store";
 import { FirebaseMember, Member } from "../types/Member";
 import { Task } from "../types/Task";
+import {
+  FirebaseBaseHistoryEntry,
+  FirebaseHistoryEntry,
+  FirebaseManualHistoryEntry,
+  FirebaseTaskHistoryEntry,
+  TaskHistoryEntry,
+} from "../types/HistoryEntry";
+import { useSnackbar } from "vue3-snackbar";
 
 export type AddPointsData =
   | { id: string; change: number; message: string }
@@ -22,45 +31,53 @@ export const usePointsStore = defineStore("points", () => {
   const db = getFirestore();
 
   const authStore = useAuthStore();
+  const snackbar = useSnackbar();
 
   const finishedInitialLoad = ref(false);
 
   // members
   const members = ref<Member[]>([]);
   onSnapshot(collection(db, "members"), async (snapshot) => {
-    const removeMemberById = (id: string) => {
-      const idx = members.value.findIndex((v) => v.id == id);
-      if (idx == -1) {
-        console.error(`could not find member ${id} in local store`);
-        return;
-      }
-      members.value.splice(idx, 1);
-    };
-    const addMemberFromDocRef = async (docRef: DocumentReference) => {
-      const [member, err] = await Member.fromId(docRef.id);
-      if (member) {
+    try {
+      const removeMemberById = (id: string) => {
+        const idx = members.value.findIndex((v) => v.id == id);
+        if (idx == -1) {
+          console.error(`could not find member ${id} in local store`);
+          return;
+        }
+        members.value.splice(idx, 1);
+      };
+      const addMemberFromDocRef = async (docRef: DocumentReference) => {
+        const member = await Member.fromId(docRef.id);
         members.value.push(member);
-      } else {
-        throw new Error(`error getting member from doc: ${err}`);
+      };
+      for (const change of snapshot.docChanges()) {
+        switch (change.type) {
+          case "modified":
+            removeMemberById(change.doc.id);
+            await addMemberFromDocRef(change.doc.ref);
+            break;
+          case "added":
+            await addMemberFromDocRef(change.doc.ref);
+            break;
+          case "removed":
+            removeMemberById(change.doc.id);
+            break;
+          default:
+            throw new Error(`unknown Firestore change.type: ${change.type}`);
+        }
       }
-    };
-    for (const change of snapshot.docChanges()) {
-      switch (change.type) {
-        case "modified":
-          removeMemberById(change.doc.id);
-          await addMemberFromDocRef(change.doc.ref);
-          break;
-        case "added":
-          await addMemberFromDocRef(change.doc.ref);
-          break;
-        case "removed":
-          removeMemberById(change.doc.id);
-          break;
-        default:
-          throw new Error(`unknown Firestore change.type: ${change.type}`);
-      }
+    } catch (e) {
+      console.error(`could not load members`, e);
+      // now I actually have to deal with the UI for errors
+      snackbar.add({
+        type: "error",
+        title: "An unexpected error occurred loading members",
+        text: "Please contact the site admins",
+      });
+    } finally {
+      finishedInitialLoad.value = true;
     }
-    finishedInitialLoad.value = true;
   });
 
   // leaderboard entries, which is basically members sorted by points
@@ -76,48 +93,65 @@ export const usePointsStore = defineStore("points", () => {
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   });
 
-  // todo: refactor to use more consistent error handling throughout
-  // a string return will be an error, null return means no error
-  const addPoints = async (data: AddPointsData): Promise<string | null> => {
+  /**
+   * Add points. Remember to handle any thrown errors in the UI.
+   * @param data
+   * @throws
+   */
+  const addPoints = async (data: AddPointsData): Promise<void> => {
     const docRef = doc(db, "members", data.id);
     const newHistoryEntry = doc(collection(db, docRef.path, "history"));
 
     if (!(authStore.isAuthenticated && authStore.user?.uid)) {
-      return "cannot modify points, not signed in as admin";
+      throw new Error("cannot modify points, not signed in as admin");
     }
 
     // check if member has completed task before
     if ("task" in data) {
-      const [member, err] = await Member.fromId(data.id);
-      if (err) return `error getting member: ${err}`;
+      const member = await Member.fromId(data.id);
 
       if (member.hasCompletedTask(data.task)) {
-        return `member ${member.name} has already completed task ${data.task.title}`;
+        throw new Error(
+          `member ${member.name} has already completed task ${data.task.title}`
+        );
       }
     }
 
-    await setDoc(newHistoryEntry, {
+    type T = Omit<FirebaseBaseHistoryEntry, "_tag">;
+    const baseFirebaseData: T = {
       adminId: authStore.user.uid,
-      change: (data as any).change ?? null,
-      message: (data as any).message ?? null,
-      taskId: (data as any).task?.id ?? null,
-      timestamp: serverTimestamp(),
-    });
+      timestamp: Timestamp.fromDate(new Date()),
+    };
+    let firebaseData: FirebaseHistoryEntry;
+    if ("task" in data) {
+      // TaskHistoryEntry
+      const x: Omit<FirebaseTaskHistoryEntry, keyof T> = {
+        _tag: "task",
+        taskId: data.task.id,
+      };
+      firebaseData = { ...baseFirebaseData, ...x };
+    } else {
+      const x: Omit<FirebaseManualHistoryEntry, keyof T> = {
+        _tag: "manual",
+        message: data.message,
+        change: data.change,
+      };
+      firebaseData = { ...baseFirebaseData, ...x };
+    }
 
-    return null;
+    await setDoc(newHistoryEntry, firebaseData);
   };
 
-  // returns a string containing the error if there was one, otherwise null
+  /**
+   *
+   * @param name name of the member to add
+   * @throws
+   */
   const addMember = async (name: string) => {
-    try {
-      await addDoc(collection(db, "members"), {
-        name,
-        points: 0,
-      });
-    } catch (e) {
-      return `${e}`;
-    }
-    return null;
+    await addDoc(collection(db, "members"), {
+      name,
+      points: 0,
+    });
   };
 
   return {

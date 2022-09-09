@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onErrorCaptured, ref } from "vue";
 
 import RICPLeaderboardEntry from "./RICPLeaderboardEntry.vue";
 import AddMemberModal from "../../modals/AddMemberModal.vue";

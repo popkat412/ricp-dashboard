@@ -255,9 +255,11 @@ const addMember = async () => {
 
   loading.value = true;
 
-  const err = await tasksStore.addTask(data);
-  if (err) {
-    snackbar.add({ type: "error", title: "Error", text: err });
+  try {
+    await tasksStore.addTask(data);
+  } catch (e) {
+    snackbar.add({ type: "error", title: "Error", text: `${e}` });
+    loading.value = false;
     return;
   }
 

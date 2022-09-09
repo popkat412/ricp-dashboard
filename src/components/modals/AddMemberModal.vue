@@ -60,13 +60,16 @@ const addMember = async () => {
 
   loading.value = true;
 
-  const err = await pointsStore.addMember(name.value);
-  if (err) {
-    snackbar.add({ type: "error", title: "Error", text: err });
+  try {
+    await pointsStore.addMember(name.value);
+  } catch (e) {
+    snackbar.add({ type: "error", title: "Error", text: `${e}` });
+    loading.value = false;
     return;
   }
 
   loading.value = false;
+
   snackbar.add({
     type: "success",
     title: `Successfully added member ${name.value}`,

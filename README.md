@@ -13,9 +13,12 @@ Features
 
 Code stuff
 - [ ] Extract duplicated modal stuff
+- [ ] Extract the duplicate points store and tasks store stuff
 - [ ] Fix the using classes in defineProps issue
 - [ ] Consistent error handling
-- [ ] Have a fromId for Member
+
+Important stuff
+- [ ] Firebase security rules
 
 ## Docs
 
@@ -26,11 +29,15 @@ Code stuff
     - string `name`
     - subcollection `history`
       - document `<auto generated id>`
-        - integer | null `change` (either change and message is null OR task is null)
-        - timestamp `timestamp`
-        - string | null `message`
-        - string `adminId`
-        - string | null `taskId` (the task associated with this addition of points)
+        - string `_tag` (either "task" or "manual" to distinguis between TaskHistoryEntry and ManualHistoryEntry)
+        - _common fields_:
+          - timestamp `timestamp`
+          - string `adminId`
+        - _if `_tag` is `"manual"`_:
+          - integer | null `change` (either change and message is null OR task is null)
+          - string | null `message`
+        - _if `_tag` is `"task"`_:
+          - string | null `taskId` (the task associated with this addition of points)
 - collection `tasks`
   - document `<auto generated id>`
     - string `title`

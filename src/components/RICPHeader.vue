@@ -72,6 +72,7 @@ import { useSnackbar } from "vue3-snackbar";
 import BaseLoadingIndicator from "./BaseLoadingIndicator.vue";
 
 import { useAuthStore } from "../stores/auth.store";
+import { AuthError } from "@firebase/auth";
 
 const authStore = useAuthStore();
 
@@ -113,7 +114,12 @@ const adminLogin = async () => {
   loading.value = true;
 
   // try sign in
-  const [, err] = await authStore.signIn(email.value, password.value);
+  let err: AuthError | undefined;
+  try {
+    await authStore.signIn(email.value, password.value);
+  } catch (e) {
+    err = e as AuthError;
+  }
 
   // helper functions
   const errFn = (text: string) =>
@@ -154,15 +160,18 @@ const adminLogin = async () => {
 };
 
 const signOut = async () => {
-  const err = await authStore.signOut();
-  if (err) {
+  try {
+    await authStore.signOut();
+  } catch (e) {
     snackbar.add({
       type: "error",
       title: "Error signing out",
-      text: err.message, // yes yes i'm technically not supposed to show this to the user but whatever
+      text: (e as AuthError).message,
+      // ^^ yes yes i'm technically not supposed to show this to the user according to firebase docs but whatever
     });
-  } else {
-    snackbar.add({ type: "success", title: "SIgned out successfully" });
+    return;
   }
+
+  snackbar.add({ type: "success", title: "SIgned out successfully" });
 };
 </script>
