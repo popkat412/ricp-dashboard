@@ -48,6 +48,7 @@
 
       <hr />
 
+      <!-- todo: put this in a disclosure -->
       <div>
         <label class="text-white/60">Start date:</label>
         <input
@@ -194,7 +195,6 @@ const addMember = async () => {
 
   // validation
   if (!validateNonEmpty(title, "Title")) return;
-  if (!validateNonEmpty(description, "Description")) return;
   if (!validateNonEmpty(baseScoreFnParams.value.st, "Start date")) return;
   if (!validateNonEmpty(baseScoreFnParams.value.lb, "Lower bound")) return;
   if (!validateNonEmpty(baseScoreFnParams.value.ub, "Upper bound")) return;

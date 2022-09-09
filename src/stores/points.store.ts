@@ -2,10 +2,8 @@ import {
   addDoc,
   collection,
   doc,
-  DocumentReference,
   getFirestore,
   increment,
-  onSnapshot,
   setDoc,
   Timestamp,
   updateDoc,
@@ -13,7 +11,7 @@ import {
 import { defineStore } from "pinia";
 import { computed, readonly, ref } from "vue";
 import { useAuthStore } from "./auth.store";
-import { FirebaseMember, Member } from "../types/Member";
+import { Member } from "../types/Member";
 import { Task } from "../types/Task";
 import {
   FirebaseBaseHistoryEntry,
@@ -21,7 +19,7 @@ import {
   FirebaseManualHistoryEntry,
   FirebaseTaskHistoryEntry,
 } from "../types/HistoryEntry";
-import { useSnackbar } from "vue3-snackbar";
+import { useFirestoreCollection } from "../utils";
 
 export type AddPointsData =
   | { id: string; change: number; message: string }
@@ -31,57 +29,11 @@ export const usePointsStore = defineStore("points", () => {
   const db = getFirestore();
 
   const authStore = useAuthStore();
-  const snackbar = useSnackbar();
 
-  const finishedInitialLoad = ref(false);
-
-  // members
-  const members = ref<Member[]>([]);
-  onSnapshot(collection(db, "members"), async (snapshot) => {
-    console.log("here", snapshot);
-    try {
-      const removeMemberById = (id: string) => {
-        const idx = members.value.findIndex((v) => v.id == id);
-        if (idx == -1) {
-          console.error(`could not find member ${id} in local store`);
-          return;
-        }
-        members.value.splice(idx, 1);
-      };
-      // todo: use doc instead of id so we don't have to fetch the data twice
-      const addMemberFromDocRef = async (docRef: DocumentReference) => {
-        const member = await Member.fromId(docRef.id);
-        members.value.push(member);
-      };
-      for (const change of snapshot.docChanges()) {
-        console.log(change);
-        switch (change.type) {
-          case "modified":
-            removeMemberById(change.doc.id);
-            await addMemberFromDocRef(change.doc.ref);
-            break;
-          case "added":
-            await addMemberFromDocRef(change.doc.ref);
-            break;
-          case "removed":
-            removeMemberById(change.doc.id);
-            break;
-          default:
-            throw new Error(`unknown Firestore change.type: ${change.type}`);
-        }
-      }
-    } catch (e) {
-      console.error(`could not load members`, e);
-      // now I actually have to deal with the UI for errors
-      snackbar.add({
-        type: "error",
-        title: "An unexpected error occurred loading members",
-        text: "Please contact the site admins",
-      });
-    } finally {
-      finishedInitialLoad.value = true;
-    }
-  });
+  const [members, finishedInitialLoad] = useFirestoreCollection(
+    collection(db, "members"),
+    (doc) => Member.fromId(doc.id)
+  );
 
   // leaderboard entries, which is basically members sorted by points
   const leaderboardEntries = computed(() =>
