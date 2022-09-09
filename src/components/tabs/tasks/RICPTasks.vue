@@ -7,7 +7,9 @@
         :on-completed="onCompleted"
       >
       </RICPTaskEntries>
+      <div v-else>No tasks</div>
     </div>
+    <div v-else><BaseLoadingIndicator /></div>
   </div>
   <div class="w-full flex justify-center items-center">
     <button
@@ -39,6 +41,7 @@ import RICPTaskEntries from "./RICPTaskEntries.vue";
 import AddTaskModal from "../../modals/AddTaskModal.vue";
 import { Task } from "../../../types/Task";
 import CompleteTaskModal from "../../modals/CompleteTaskModal.vue";
+import BaseLoadingIndicator from "../../BaseLoadingIndicator.vue";
 
 const tasksStore = useTasksStore();
 const authStore = useAuthStore();

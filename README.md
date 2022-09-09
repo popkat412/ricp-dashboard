@@ -10,10 +10,8 @@ Features
 - [ ] Archive members
 - [ ] Multiple selections and actions
 - [ ] Clear the contents of modals after dimsissing
-- [ ] Lodaing indicator for task tab
 
 Code stuff
-- [ ] Extract duplicated modal stuff
 - [ ] Fix the using classes in defineProps issue
 
 Important stuff
