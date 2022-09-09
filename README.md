@@ -10,6 +10,7 @@ Features
 - [ ] Archive members
 - [ ] Multiple selections and actions
 - [ ] Clear the contents of modals after dimsissing
+- [ ] Revert history entry
 
 Code stuff
 - [ ] Fix the using classes in defineProps issue
