@@ -4,10 +4,11 @@ import {
   doc,
   DocumentReference,
   getFirestore,
+  increment,
   onSnapshot,
-  serverTimestamp,
   setDoc,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, readonly, ref } from "vue";
@@ -19,7 +20,6 @@ import {
   FirebaseHistoryEntry,
   FirebaseManualHistoryEntry,
   FirebaseTaskHistoryEntry,
-  TaskHistoryEntry,
 } from "../types/HistoryEntry";
 import { useSnackbar } from "vue3-snackbar";
 
@@ -38,6 +38,7 @@ export const usePointsStore = defineStore("points", () => {
   // members
   const members = ref<Member[]>([]);
   onSnapshot(collection(db, "members"), async (snapshot) => {
+    console.log("here", snapshot);
     try {
       const removeMemberById = (id: string) => {
         const idx = members.value.findIndex((v) => v.id == id);
@@ -47,11 +48,13 @@ export const usePointsStore = defineStore("points", () => {
         }
         members.value.splice(idx, 1);
       };
+      // todo: use doc instead of id so we don't have to fetch the data twice
       const addMemberFromDocRef = async (docRef: DocumentReference) => {
         const member = await Member.fromId(docRef.id);
         members.value.push(member);
       };
       for (const change of snapshot.docChanges()) {
+        console.log(change);
         switch (change.type) {
           case "modified":
             removeMemberById(change.doc.id);
@@ -140,6 +143,13 @@ export const usePointsStore = defineStore("points", () => {
     }
 
     await setDoc(newHistoryEntry, firebaseData);
+
+    // Kind of a hack but we increment a dummy value on the
+    // doc such that it triggers the onSnapshot to fire
+    // (because it doens't fire when a new document gets added to a subcollection).
+    // This works because every time something changes in the onSnapshot,
+    // I'm re-getting the entire thing from Firestore (using Member.fromId)
+    await updateDoc(docRef, { dummy: increment(1) });
   };
 
   /**
@@ -150,7 +160,6 @@ export const usePointsStore = defineStore("points", () => {
   const addMember = async (name: string) => {
     await addDoc(collection(db, "members"), {
       name,
-      points: 0,
     });
   };
 

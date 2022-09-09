@@ -10,6 +10,7 @@ Features
 - [ ] Show list of people who have completed a particular task
 - [ ] Archive members
 - [ ] Multiple selections and actions
+- [ ] Clear the contents of modals after dimsissing
 
 Code stuff
 - [ ] Extract duplicated modal stuff
