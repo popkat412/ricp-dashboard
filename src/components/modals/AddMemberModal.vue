@@ -1,4 +1,3 @@
-<!-- todo: refactor out a separate base modal component -->
 <template>
   <Modal :open="$props.open" @close="$emit('close')" :action-fn="addMember">
     <template #title>Add a member</template>

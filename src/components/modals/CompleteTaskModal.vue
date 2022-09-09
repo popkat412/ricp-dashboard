@@ -1,4 +1,3 @@
-<!-- todo: refactor out a separate base modal component -->
 <template>
   <div v-if="$props.task">
     <Modal

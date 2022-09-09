@@ -1,4 +1,3 @@
-<!-- todo: refactor out a separate base modal component -->
 <template>
   <Modal :open="$props.open" @close="$emit('close')" :action-fn="addTask">
     <template #title>Add task</template>
@@ -19,14 +18,15 @@
 
       <hr />
 
-      <div>
+      <!-- ok so i didn't have enough time to implement this so i just commented it out kekw -->
+      <!-- <div>
         <label class="text-white/60">Expiry date (leave blank for none):</label>
         <input
           type="date"
           class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2 w-full"
           v-model="expiryDate"
         />
-      </div>
+      </div> -->
 
       <div>
         <label class="text-white/60">Score function:</label>
@@ -39,6 +39,8 @@
           </option>
         </select>
       </div>
+
+      <!-- todo: show score function options -->
 
       <hr />
 

@@ -30,7 +30,7 @@
             <div class="text-white/50 mt-1">
               <div>Score function: {{ getScoreFnName(task) }}</div>
               <div>Date added: {{ getDateAdded(task) }}</div>
-              <div>Expiry date: {{ getExpiryDate(task) }}</div>
+              <!-- <div>Expiry date: {{ getExpiryDate(task) }}</div> -->
             </div>
           </div>
           <div class="flex-grow"></div>
