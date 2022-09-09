@@ -1,15 +1,9 @@
 <template>
-  <Dialog
-    :open="$props.open"
-    @close="$emit('close')"
-    class="fixed z-50 inset-0 overflow-auto bg-black/50"
-  >
-    <DialogPanel
-      class="text-white flex flex-col justify-center p-4 bg-gray-800 max-w-sm mt-[15%] mx-auto space-y-3 drop-shadow-md"
-    >
-      <DialogTitle>
-        Add (or subtract) points to {{ $props.memberName }}
-      </DialogTitle>
+  <Modal :open="$props.open" @close="$emit('close')" :action-fn="addPoints">
+    <template #title>
+      Add (or subtract) points to {{ $props.memberName }}
+    </template>
+    <template #content>
       <input
         type="text"
         placeholder="Amount (negative value subtracts points)"
@@ -22,30 +16,16 @@
         class="focus-ring p-2 rounded-sm bg-gray-900"
         v-model="message"
       />
-
-      <BaseLoadingIndicator
-        :style="{ visibility: loading ? 'visible' : 'hidden' }"
-      />
-
-      <div class="flex justify-end flex-row space-x-1">
-        <button class="focus-ring p-1 rounded-sm" @click="$emit('close')">
-          Cancel
-        </button>
-        <button class="focus-ring p-1 rounded-sm bg-sky-700" @click="addPoints">
-          Add points
-        </button>
-      </div>
-    </DialogPanel>
-  </Dialog>
+    </template>
+    <template #action-button>Add points</template>
+  </Modal>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
-import { useSnackbar } from "vue3-snackbar";
-
-import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
+import { SnackbarOptions } from "vue3-snackbar";
 import { usePointsStore } from "../../stores/points.store";
+import Modal from "./Modal.vue";
 
 const $props = defineProps<{
   open: boolean;
@@ -60,34 +40,26 @@ const pointsStore = usePointsStore();
 
 const amount = ref("");
 const message = ref("");
-const loading = ref(false);
 
-const snackbar = useSnackbar();
-
-const addPoints = async () => {
+const addPoints = async (): Promise<[SnackbarOptions | undefined, boolean]> => {
   const parsedAmount = parseInt(amount.value, 10);
 
   if (isNaN(parsedAmount)) {
-    snackbar.add({ type: "error", title: "Amount is not a valid integer" });
-    return;
+    return [{ type: "error", title: "Amount is not a valid integer" }, true];
   }
 
-  loading.value = true;
+  await pointsStore.addPoints({
+    id: $props.memberId,
+    change: parsedAmount,
+    message: message.value,
+  });
 
-  try {
-    await pointsStore.addPoints({
-      id: $props.memberId,
-      change: parsedAmount,
-      message: message.value,
-    });
-  } catch (e) {
-    snackbar.add({ type: "error", title: "Error", text: `${e}` });
-    loading.value = false;
-    return;
-  }
-
-  loading.value = false;
-
-  $emit("close");
+  return [
+    {
+      type: "success",
+      title: `Added ${parsedAmount} points`,
+    },
+    false,
+  ];
 };
 </script>

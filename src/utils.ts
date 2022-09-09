@@ -30,7 +30,6 @@ export function useFirestoreCollection<T extends { readonly id: string }>(
   const snackbar = useSnackbar();
 
   onSnapshot(collection, async (snapshot) => {
-    console.log("here", snapshot);
     try {
       const removeById = (id: string) => {
         const idx = arr.value.findIndex((v) => v.id == id);
@@ -44,9 +43,10 @@ export function useFirestoreCollection<T extends { readonly id: string }>(
         arr.value.push(await createFromDoc(doc));
       };
       for (const change of snapshot.docChanges()) {
-        console.log(change);
         switch (change.type) {
           case "modified":
+            // todo: make these two happen together (syncronyously)
+            // so there isn't a flash where the thing gets removed then added back from the UI
             removeById(change.doc.id);
             await addFromDoc(change.doc);
             break;

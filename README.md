@@ -6,17 +6,15 @@ Features
 - [ ] Edit tasks
 - [ ] "Expire"/Archive tasks
 - [ ] Router
-- [ ] Merge "message" and "task" in history entries
 - [ ] Show list of people who have completed a particular task
 - [ ] Archive members
 - [ ] Multiple selections and actions
 - [ ] Clear the contents of modals after dimsissing
+- [ ] Lodaing indicator for task tab
 
 Code stuff
 - [ ] Extract duplicated modal stuff
-- [ ] Extract the duplicate points store and tasks store stuff
 - [ ] Fix the using classes in defineProps issue
-- [ ] Consistent error handling
 
 Important stuff
 - [ ] Firebase security rules

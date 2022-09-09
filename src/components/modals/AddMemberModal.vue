@@ -1,44 +1,26 @@
 <!-- todo: refactor out a separate base modal component -->
 <template>
-  <Dialog
-    :open="$props.open"
-    @close="$emit('close')"
-    class="fixed z-50 inset-0 overflow-auto bg-black/50"
-  >
-    <DialogPanel
-      class="text-white flex flex-col justify-center p-4 bg-gray-800 max-w-sm mt-[15%] mx-auto space-y-3 drop-shadow-md"
-    >
-      <DialogTitle>Add a member</DialogTitle>
+  <Modal :open="$props.open" @close="$emit('close')" :action-fn="addMember">
+    <template #title>Add a member</template>
+    <template #content>
       <input
         type="text"
         placeholder="Name"
         class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2"
         v-model="name"
       />
-
-      <BaseLoadingIndicator
-        :style="{ visibility: loading ? 'visible' : 'hidden' }"
-      />
-
-      <div class="flex justify-end flex-row space-x-1">
-        <button class="focus-ring p-1 rounded-sm" @click="$emit('close')">
-          Cancel
-        </button>
-        <button class="focus-ring p-1 rounded-sm bg-sky-700" @click="addMember">
-          Add member
-        </button>
-      </div>
-    </DialogPanel>
-  </Dialog>
+    </template>
+    <template #action-button>Add member</template>
+  </Modal>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
-import { useSnackbar } from "vue3-snackbar";
+import { SnackbarOptions } from "vue3-snackbar";
 import { usePointsStore } from "../../stores/points.store";
-import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
+import Modal from "./Modal.vue";
 
+// unfortunately i don't think i can remove this duplication
 const $props = defineProps<{
   open: boolean;
 }>();
@@ -47,33 +29,19 @@ const $emit = defineEmits<{
 }>();
 
 const pointsStore = usePointsStore();
-const snackbar = useSnackbar();
 
 const name = ref("");
-const loading = ref(false);
 
-const addMember = async () => {
+const addMember = async (): Promise<[SnackbarOptions | undefined, boolean]> => {
   if (name.value == "") {
-    snackbar.add({ type: "error", title: "Name cannot be empty" });
-    return;
+    return [{ type: "error", title: "Name cannot be empty" }, true];
   }
 
-  loading.value = true;
+  await pointsStore.addMember(name.value);
 
-  try {
-    await pointsStore.addMember(name.value);
-  } catch (e) {
-    snackbar.add({ type: "error", title: "Error", text: `${e}` });
-    loading.value = false;
-    return;
-  }
-
-  loading.value = false;
-
-  snackbar.add({
-    type: "success",
-    title: `Successfully added member ${name.value}`,
-  });
-  $emit("close");
+  return [
+    { type: "success", title: `Successfully added member ${name.value}` },
+    false,
+  ];
 };
 </script>

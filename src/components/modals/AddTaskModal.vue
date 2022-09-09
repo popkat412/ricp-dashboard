@@ -1,14 +1,8 @@
 <!-- todo: refactor out a separate base modal component -->
 <template>
-  <Dialog
-    :open="$props.open"
-    class="fixed z-50 inset-0 overflow-auto bg-black/50"
-    @keyup.esc="$emit('close')"
-  >
-    <DialogPanel
-      class="text-white flex flex-col justify-center p-4 bg-gray-800 max-w-sm mt-[15%] mx-auto space-y-3 drop-shadow-md"
-    >
-      <DialogTitle>Add task</DialogTitle>
+  <Modal :open="$props.open" @close="$emit('close')" :action-fn="addTask">
+    <template #title>Add task</template>
+    <template #content>
       <input
         type="text"
         placeholder="Title"
@@ -89,31 +83,17 @@
           v-model="extraScoreFnParams[key]"
         />
       </div>
-
-      <BaseLoadingIndicator
-        :style="{ visibility: loading ? 'visible' : 'hidden' }"
-      />
-
-      <div class="flex justify-end flex-row space-x-1">
-        <button class="focus-ring p-1 rounded-sm" @click="$emit('close')">
-          Cancel
-        </button>
-        <button class="focus-ring p-1 rounded-sm bg-sky-700" @click="addMember">
-          Add task
-        </button>
-      </div>
-    </DialogPanel>
-  </Dialog>
+    </template>
+    <template #action-button>Add task</template>
+  </Modal>
 </template>
 
 <script setup lang="ts">
 import { Ref, ref, unref, watch } from "vue";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/vue";
-import { useSnackbar } from "vue3-snackbar";
-import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
+import { Snackbar, SnackbarOptions, useSnackbar } from "vue3-snackbar";
 import { useTasksStore } from "../../stores/tasks.store";
 import { ScoreFnName, SCORE_FN_NAMES } from "../../types/ScoreFn";
-import { start } from "repl";
+import Modal from "./Modal.vue";
 
 const $props = defineProps<{
   open: boolean;
@@ -149,8 +129,6 @@ watch(scoreFnName, (newScoreFnName) => {
   }
 });
 
-const loading = ref(false);
-
 // returns true if it passes validation, false otherwise
 const validateNonEmpty = (v: Ref<string> | string, name: string) => {
   if (unref(v) == "") {
@@ -183,40 +161,37 @@ const validateDate = (v: Ref<string> | string, name: string) => {
   return d;
 };
 
-const addMember = async () => {
-  console.log({
-    title: title.value,
-    description: description.value,
-    expiryDate: expiryDate.value,
-    scoreFnName: scoreFnName.value,
-    baseScoreFnParams: baseScoreFnParams.value,
-    extraScoreFnParams: extraScoreFnParams.value,
-  });
-
+const addTask = async (): Promise<[SnackbarOptions | undefined, boolean]> => {
   // validation
-  if (!validateNonEmpty(title, "Title")) return;
-  if (!validateNonEmpty(baseScoreFnParams.value.st, "Start date")) return;
-  if (!validateNonEmpty(baseScoreFnParams.value.lb, "Lower bound")) return;
-  if (!validateNonEmpty(baseScoreFnParams.value.ub, "Upper bound")) return;
+
+  // in this case it's more convenient to show the snackbar via the validation function
+  // rather than by returning it
+  if (!validateNonEmpty(title, "Title")) return [undefined, true];
+  if (!validateNonEmpty(baseScoreFnParams.value.st, "Start date"))
+    return [undefined, true];
+  if (!validateNonEmpty(baseScoreFnParams.value.lb, "Lower bound"))
+    return [undefined, true];
+  if (!validateNonEmpty(baseScoreFnParams.value.ub, "Upper bound"))
+    return [undefined, true];
   const lb = validateInt(baseScoreFnParams.value.lb, "Lower bound");
-  if (lb == null) return;
+  if (lb == null) return [undefined, true];
   const ub = validateInt(baseScoreFnParams.value.ub, "Upper bound");
-  if (ub == null) return;
+  if (ub == null) return [undefined, true];
 
   const parsedExtraScoreFnParams: { [k: string]: unknown } = {};
 
   switch (scoreFnName.value) {
     case "constant": {
       const c = validateInt(extraScoreFnParams.value.c, "c");
-      if (c == null) return;
+      if (c == null) return [undefined, true];
       parsedExtraScoreFnParams.c = c;
       break;
     }
     case "linear": {
       const c = validateInt(extraScoreFnParams.value.c, "c");
-      if (c == null) return;
+      if (c == null) return [undefined, true];
       const m = validateInt(extraScoreFnParams.value.m, "m");
-      if (m == null) return;
+      if (m == null) return [undefined, true];
       parsedExtraScoreFnParams.c = c;
       parsedExtraScoreFnParams.m = m;
       break;
@@ -228,12 +203,12 @@ const addMember = async () => {
   let parsedExpDate: Date | null = null;
   if (expiryDate.value) {
     const validateExpDate = validateDate(expiryDate, "Expiry Date");
-    if (!validateExpDate) return;
+    if (!validateExpDate) return [undefined, true];
     parsedExpDate = validateExpDate;
   }
 
   const st = validateDate(baseScoreFnParams.value.st, "Start date");
-  if (!st) return;
+  if (!st) return [undefined, true];
 
   // finally done with validation
   const data = {
@@ -251,24 +226,15 @@ const addMember = async () => {
     expired: false,
   };
 
-  console.log(data);
+  await tasksStore.addTask(data);
 
-  loading.value = true;
-
-  try {
-    await tasksStore.addTask(data);
-  } catch (e) {
-    snackbar.add({ type: "error", title: "Error", text: `${e}` });
-    loading.value = false;
-    return;
-  }
-
-  loading.value = false;
-  snackbar.add({
-    type: "success",
-    title: `Successfully added task ${title.value}`,
-  });
-  $emit("close");
+  return [
+    {
+      type: "success",
+      title: `Successfully added task ${title.value}`,
+    },
+    false,
+  ];
 };
 
 const capsFirstLetter = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
