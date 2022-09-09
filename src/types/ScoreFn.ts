@@ -1,12 +1,20 @@
 import { clamp } from "../utils";
 
+/**
+ * Array of all the score function names supported
+ */
 export const SCORE_FN_NAMES = ["constant", "linear"] as const;
+
 export type ScoreFnName = typeof SCORE_FN_NAMES[number];
 
 export function isScoreFnName(scoreFnName: string): scoreFnName is ScoreFnName {
   return SCORE_FN_NAMES.includes(scoreFnName as any);
 }
 
+/**
+ * The type of object that the abstract base class ScoreFnParams accepts
+ * in its constructor.
+ */
 export interface BaseScoreFnArgs {
   st?: Date;
   lb?: number;
@@ -26,9 +34,37 @@ export function isBaseScoreFnParamsObj(scoreFnParams: {
   );
 }
 
+/**
+ * Abstract base ScoreFnParams class. All score function parameter classes
+ * should inherit from this class.
+ */
 export abstract class ScoreFnParams {
+  /**
+   * The "start date" of the function, so the function
+   * will start counting the number of days from this start date.
+   * You can think of the function as being called as f(x - st) if
+   * you're more mathematically inclined.
+   *
+   * The default value is the current date.
+   */
   st: Date;
+  /**
+   * Lower bound of the score function. The result of the
+   * score function will be clamped such that it never falls below this.
+   *
+   * The default value is 0.
+   *
+   * Do note that the lower bound will be applied always.
+   */
   lb: number;
+  /**
+   * Upper bound of the score function. The result of the
+   * score function will be clamped such that it is never higher than this.
+   *
+   * The default value is 999.
+   *
+   * Do note that the lower bound will be applied always.
+   */
   ub: number;
 
   constructor({ st = new Date(), lb = 0, ub = 999 }: BaseScoreFnArgs) {
@@ -37,6 +73,10 @@ export abstract class ScoreFnParams {
     this.ub = ub;
   }
 
+  /**
+   * Calculates the score of the function with all the parameters
+   * on the particular date t
+   */
   calculateScore(t: Date): number {
     // Very naive way of calculating number of days past
     // hope this doesn't bite me in the ass later.
@@ -53,11 +93,26 @@ export abstract class ScoreFnParams {
     return clamp(y, this.lb, this.ub);
   }
 
-  // x is the number of days that has passed (should be a whole number)
+  /**
+   * Evaluate the actual function itself, without worrying
+   * about st, ub, or lb
+   *
+   * @param x the number of days that has passed (should be a whole number)
+   */
   protected abstract evaluate(x: number): number;
 }
 
+/**
+ * Constant score function params.
+ * A constan score function will (as the name suggests)
+ * always be at some constnat value c regardless of the date.
+ *
+ * Mathematical expression: f(x) = c
+ */
 export class ConstantScoreFnParams extends ScoreFnParams {
+  /**
+   * The number of points the task will be worth, always.
+   */
   c: number;
 
   constructor(args: BaseScoreFnArgs & { c?: number }) {
@@ -70,6 +125,15 @@ export class ConstantScoreFnParams extends ScoreFnParams {
   }
 }
 
+/**
+ * Linear score function params. The score will decrease (or increase)
+ * linearly as the days pass.
+ *
+ * Mathematical expression: f(x) - mx + c
+ *
+ * The negative is there because you will usually want the worth
+ * of the task to decrease as the days go by.
+ */
 export class LinearScoreFnParams extends ConstantScoreFnParams {
   m: number;
 

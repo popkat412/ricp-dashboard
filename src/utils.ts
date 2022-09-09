@@ -8,6 +8,9 @@ import {
 import { ref, Ref } from "vue";
 import { useSnackbar } from "vue3-snackbar";
 
+/**
+ * Replaces all firestore Timestamps in a object with Dates.
+ */
 export type TimestampsToDate<T> = {
   [Key in keyof T]: T[Key] extends Timestamp
     ? Date
@@ -16,10 +19,26 @@ export type TimestampsToDate<T> = {
     : T[Key];
 };
 
+/**
+ * Clamp v between lb and ub.
+ */
 export function clamp(v: number, lb: number, ub: number): number {
   return Math.min(Math.max(v, lb), ub);
 }
 
+/**
+ * Utility function to reduce duplication between tasks and points store.
+ *
+ * @param collection Collection we want to watch
+ * @param createFromDoc Function that creates the JS object/class from a firebase DocumentSnapshot
+ * @returns [a reference to an array of JS objects that each corresponds to a document, finished initial load or not]
+ * @example
+ * const [members, finishedInitialLoad] = useFirestoreCollection(
+ *   collection(db, "members"),
+ *   (doc) => Member.fromId(doc.id)
+ * );
+ *
+ */
 export function useFirestoreCollection<T extends { readonly id: string }>(
   collection: CollectionReference,
   createFromDoc: (doc: DocumentSnapshot) => Promise<T>

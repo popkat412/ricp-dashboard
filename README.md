@@ -13,9 +13,8 @@ Features
 
 Code stuff
 - [ ] Fix the using classes in defineProps issue
+- [ ] Implement a fromDoc instead of a fromId to prevent fetching data twice
 
-Important stuff
-- [ ] Firebase security rules
 
 ## Docs
 

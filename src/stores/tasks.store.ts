@@ -13,9 +13,8 @@ export const useTasksStore = defineStore("tasks", () => {
     (doc) => Task.fromId(doc.id) // todo: use fromDoc instead to avoid fetching data twice
   );
 
-  // add task
   /**
-   *
+   * Add a task
    * @param task
    * @throws
    */

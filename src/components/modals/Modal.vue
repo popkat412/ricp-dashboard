@@ -37,7 +37,7 @@ import BaseLoadingIndicator from "../BaseLoadingIndicator.vue";
 
 const $props = defineProps<{
   open: boolean;
-  actionFn: () => Promise<[SnackbarOptions | undefined, boolean]>; // returns the snackbar data
+  actionFn: () => Promise<[SnackbarOptions | undefined, boolean]>; // [snackbar data, keep modal open? ]
 }>();
 const $emit = defineEmits<{
   (e: "close"): void;

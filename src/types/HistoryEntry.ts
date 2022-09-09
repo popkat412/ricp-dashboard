@@ -10,6 +10,9 @@ export type FirebaseHistoryEntry =
   | FirebaseManualHistoryEntry
   | FirebaseTaskHistoryEntry;
 
+/**
+ * Firebase fields shared by all type of HistoryEntries
+ */
 export interface FirebaseBaseHistoryEntry {
   _tag: "manual" | "task";
   adminId: string;

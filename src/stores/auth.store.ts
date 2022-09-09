@@ -18,6 +18,7 @@ export const useAuthStore = defineStore("auth", () => {
   // vueuse/firebase stuff
   const { isAuthenticated, user } = useAuth(auth);
 
+  // current username
   const currentUserDocRef = computed(
     () => doc(db, "users", user.value?.uid ?? "dummy") // todo: see if there is any less scuffed way of doing this
   );

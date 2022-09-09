@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { Ref, ref, unref, watch } from "vue";
-import { Snackbar, SnackbarOptions, useSnackbar } from "vue3-snackbar";
+import { SnackbarOptions, useSnackbar } from "vue3-snackbar";
 import { useTasksStore } from "../../stores/tasks.store";
 import { ScoreFnName, SCORE_FN_NAMES } from "../../types/ScoreFn";
 import Modal from "./Modal.vue";

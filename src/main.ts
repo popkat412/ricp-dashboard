@@ -24,6 +24,7 @@ initializeFirebaseApp(firebaseConfig);
 const pinia = createPinia();
 const app = createApp(App);
 
+// global error handler in case i missed anything
 app.config.errorHandler = (err, instance, info) => {
   console.error("unexpected error", err, instance, info);
   const snackbar = useSnackbar();

@@ -22,6 +22,8 @@ let previousTimestamp = -1;
 let stopAnimation = false;
 let t = 0;
 
+// i don't even remember what i was doing here with all this math
+// i'll just never touch this again
 const period = 1000;
 const widthFn = (t: number) => Math.abs(0.5 * Math.sin(t * Math.PI));
 const k = 2;

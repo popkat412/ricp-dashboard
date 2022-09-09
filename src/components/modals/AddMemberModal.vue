@@ -36,6 +36,7 @@ const addMember = async (): Promise<[SnackbarOptions | undefined, boolean]> => {
     return [{ type: "error", title: "Name cannot be empty" }, true];
   }
 
+  // the exceptions will be handled by the Modal.vue component
   await pointsStore.addMember(name.value);
 
   return [

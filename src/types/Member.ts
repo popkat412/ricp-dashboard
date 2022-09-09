@@ -6,9 +6,7 @@ import {
   getDocs,
   getFirestore,
   QueryDocumentSnapshot,
-  Timestamp,
 } from "firebase/firestore";
-import { Admin } from "./Admin";
 import {
   FirebaseHistoryEntry,
   HistoryEntry,
