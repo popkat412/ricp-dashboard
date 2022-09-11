@@ -1,5 +1,9 @@
 # RICP Dashboard
 
+This project was created as part of the CEP (Computer Elective Programme) WA3.
+The rubrics, development logs, reflections, class digrams and video can be found
+in the `cep-wa3/` folder. Do note that the video will probably be gitignore-ed so it won't be on github.
+
 ## Todo
 
 Features
