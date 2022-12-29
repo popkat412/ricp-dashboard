@@ -34,7 +34,7 @@
           class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2 w-full"
           v-model="scoreFnName"
         >
-          <option v-for="i in SCORE_FN_NAMES" :value="i">
+          <option v-for="i in SCORE_FN_NAMES" :key="i" :value="i">
             {{ capsFirstLetter(i) }}
           </option>
         </select>
@@ -54,24 +54,26 @@
         />
       </div>
 
-      <div>
-        <label class="text-white/60 inline-block w-1/2">Lower bound:</label>
-        <input
-          type="text"
-          placeholder="Lower bound"
-          class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2 w-1/2"
-          v-model="baseScoreFnParams.lb"
-        />
-      </div>
+      <div v-if="scoreFnName != 'constant'">
+        <div>
+          <label class="text-white/60 inline-block w-1/2">Lower bound:</label>
+          <input
+            type="text"
+            placeholder="Lower bound"
+            class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2 w-1/2"
+            v-model="baseScoreFnParams.lb"
+          />
+        </div>
 
-      <div>
-        <label class="text-white/60 inline-block w-1/2">Upper bound:</label>
-        <input
-          type="text"
-          placeholder="Upper bound"
-          class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2 w-1/2"
-          v-model="baseScoreFnParams.ub"
-        />
+        <div>
+          <label class="text-white/60 inline-block w-1/2">Upper bound:</label>
+          <input
+            type="text"
+            placeholder="Upper bound"
+            class="focus-ring p-2 rounded-sm bg-gray-900 focus:ring-2 w-1/2"
+            v-model="baseScoreFnParams.ub"
+          />
+        </div>
       </div>
 
       <hr />
