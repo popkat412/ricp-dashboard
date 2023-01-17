@@ -5,7 +5,7 @@
   >
     <div
       class="focus-ring flex flex-col justify-items-stretch items-center rounded-lg bg-blue-100/10 p-3 text-left text-blue-100"
-      v-for="(task, idx) in $props.tasks"
+      v-for="(task, idx) in filterDeleted($props.tasks)"
       :key="idx"
     >
       <div class="w-full">
@@ -88,4 +88,6 @@ const getExpiryDate = (task: Task | TaskCompleted) =>
     ? task.expiryDate
     : task.task.expiryDate
   )?.toLocaleDateString() ?? "None";
+const filterDeleted = (tasks: Task[] | TaskCompleted[]) => 
+  tasks.filter((x: Task | TaskCompleted) => x instanceof Task ? (!x.deleted) : (x.task.deleted));
 </script>

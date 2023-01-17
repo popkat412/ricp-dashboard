@@ -46,6 +46,7 @@ Code stuff
     - timestamp `dateAdded`
     - timestamp | null `expiryDate`
     - boolean `expired`
+    - boolean `deleted`
     - string `scoreFnName` \*
     - map `scoreFnParams`
 - collection `users` (admin users)

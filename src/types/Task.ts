@@ -19,7 +19,9 @@ export interface FirebaseTask {
   scoreFnName: ScoreFnName;
   scoreFnParams: { [k: string]: unknown };
   expired: boolean;
+  deleted?: boolean;
 }
+
 
 /**
  * Class representing a task. A task contains info about how many points
@@ -58,6 +60,10 @@ export class Task {
    */
   expired: boolean;
   /**
+   * Whether this task is deleted. If it is deleted, we do not show in the main screen.
+   */
+  deleted: boolean;
+  /**
    * Score function name. A score function calculates the
    * number of points this task is worth a certain number of days after
    * a certain date. This can be used to encourage members to complete
@@ -76,6 +82,7 @@ export class Task {
     dateAdded: Date,
     expiryDate: Date | null,
     expired: boolean,
+    deleted: boolean,
     scoreFnName: ScoreFnName,
     scoreFnParams: ScoreFnParams
   ) {
@@ -85,6 +92,7 @@ export class Task {
     this.dateAdded = dateAdded;
     this.expiryDate = expiryDate;
     this.expired = expired;
+    this.deleted = deleted;
     this.scoreFnName = scoreFnName;
     this.scoreFnParams = scoreFnParams;
   }
@@ -94,7 +102,9 @@ export class Task {
     const data = (
       await getDoc(doc(db, "tasks", id))
     ).data() as FirebaseTask | null;
-    if (!data) throw new Error(`task ${id} doesn't exist`);
+    if (!data) {
+      throw new Error(`task ${id} doesn't exist`);
+    }
 
     if (!isScoreFnName(data.scoreFnName))
       throw new Error(`score function name ${data.scoreFnName} doesn't exist`);
@@ -116,6 +126,7 @@ export class Task {
       data.dateAdded.toDate(),
       data.expiryDate?.toDate() ?? null,
       data.expired,
+      data.deleted ?? false,
       data.scoreFnName,
       scoreFnParams
     );
